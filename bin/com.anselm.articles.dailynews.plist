@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  macOS launchd job: run daily_news.py every evening at 19:00.
+
+  Install:
+    1. Replace the two ABSOLUTE_PATH_TO_... placeholders below with the
+       real absolute path to your Articles folder.
+    2. cp com.anselm.articles.dailynews.plist ~/Library/LaunchAgents/
+    3. launchctl load  ~/Library/LaunchAgents/com.anselm.articles.dailynews.plist
+    4. Test:  launchctl start com.anselm.articles.dailynews
+
+  Verify:
+    tail -f /ABSOLUTE_PATH_TO_ARTICLES/Articles/_news/.cache/run.log
+
+  Unload:
+    launchctl unload ~/Library/LaunchAgents/com.anselm.articles.dailynews.plist
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.anselm.articles.dailynews</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/ABSOLUTE_PATH_TO_ARTICLES/Articles/_news/bin/run_daily_news.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/ABSOLUTE_PATH_TO_ARTICLES/Articles</string>
+
+  <!-- Run every day at 19:00 local time -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>19</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <!-- If Mac was asleep at 19:00, run at next wake -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/ABSOLUTE_PATH_TO_ARTICLES/Articles/_news/.cache/launchd.stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/ABSOLUTE_PATH_TO_ARTICLES/Articles/_news/.cache/launchd.stderr.log</string>
+
+  <!-- Keep PATH sane so Ollama's CLI can be found if the script calls it -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+</dict>
+</plist>

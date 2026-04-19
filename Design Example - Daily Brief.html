@@ -1,0 +1,1033 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Brief · 2026-04-19</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;
+    --paper-2:#ebe5d8;
+    --ink:#1a1613;
+    --ink-2:#3a332d;
+    --mute:#7a7065;
+    --rule:#d9d1c1;
+    --card:#fbf7ee;
+    --accent:#9c2a1a;     /* editorial red */
+    --accent-2:#2d4a2b;   /* forest */
+    --accent-3:#b5821f;   /* ochre */
+    --accent-4:#3c5f7a;   /* slate blue */
+    --hot:#9c2a1a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans KR","Newsreader",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.018) 1px, transparent 1px);
+    background-size:3px 3px;
+  }
+  a{color:inherit}
+  .wrap{max-width:1280px;margin:0 auto;padding:36px 40px 80px}
+
+  /* ========== MASTHEAD ========== */
+  .mast{
+    border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding:14px 0 10px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+    flex-wrap:wrap;
+  }
+  .mast-left{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .mast-title{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-size:42px;
+    line-height:1;
+    letter-spacing:-0.02em;
+    font-style:italic;
+  }
+  .mast-sub{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--mute);
+  }
+  .mast-right{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--mute);
+    text-transform:uppercase;
+    text-align:right;
+  }
+  .mast-right b{color:var(--ink);font-weight:500}
+
+  .strap{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 0 24px;
+    border-bottom:1px solid var(--rule);
+    margin-bottom:28px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--mute);
+  }
+  .strap .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ========== HERO / THEMES ========== */
+  .hero{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:0;
+    border-top:1px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    margin-bottom:40px;
+  }
+  .hero-main{
+    padding:28px 36px 32px 0;
+    border-right:1px solid var(--rule);
+  }
+  .hero-side{
+    padding:28px 0 32px 36px;
+  }
+  .kicker{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:500;
+    margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .kicker::after{content:"";flex:1;height:1px;background:var(--accent);opacity:.3}
+  .hero-h{
+    font-family:"Newsreader",serif;
+    font-weight:500;
+    font-size:52px;
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    margin:0 0 16px;
+    color:var(--ink);
+  }
+  .hero-h em{font-style:italic;color:var(--accent)}
+  .hero-lede{
+    font-family:"Newsreader",serif;
+    font-size:19px;
+    line-height:1.5;
+    color:var(--ink-2);
+    margin:0 0 22px;
+    max-width:46ch;
+  }
+  .hero-stats{
+    display:flex;gap:28px;padding-top:18px;border-top:1px solid var(--rule);
+  }
+  .stat{display:flex;flex-direction:column;gap:2px}
+  .stat b{
+    font-family:"Newsreader",serif;
+    font-size:32px;font-weight:600;line-height:1;
+    font-feature-settings:"tnum";
+  }
+  .stat span{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+  }
+
+  /* Side: theme pulse */
+  .side-h{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--mute);
+    margin:0 0 14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .side-h::after{content:"";flex:1;height:1px;background:var(--rule)}
+  .pulse-list{display:flex;flex-direction:column;gap:10px}
+  .pulse-item{
+    display:grid;
+    grid-template-columns:32px 1fr auto;
+    align-items:center;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px dotted var(--rule);
+    cursor:pointer;
+    transition:background .15s;
+  }
+  .pulse-item:last-child{border-bottom:none}
+  .pulse-item:hover{background:rgba(156,42,26,0.04)}
+  .pulse-rank{
+    font-family:"Newsreader",serif;
+    font-size:22px;font-style:italic;color:var(--mute);
+    font-feature-settings:"tnum";
+  }
+  .pulse-name{
+    font-weight:500;font-size:14.5px;line-height:1.25;
+  }
+  .pulse-name small{display:block;color:var(--mute);font-size:12px;font-weight:400;margin-top:2px}
+  .pulse-bar{
+    width:72px;height:6px;background:var(--paper-2);border-radius:3px;
+    position:relative;overflow:hidden;
+  }
+  .pulse-bar::after{
+    content:"";position:absolute;inset:0;width:var(--w,50%);
+    background:var(--accent);border-radius:3px;
+  }
+  .pulse-count{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;color:var(--mute);margin-top:4px;
+  }
+
+  /* ========== THEME DEEP DIVE ========== */
+  .themes{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    margin-bottom:48px;
+  }
+  .t-card{
+    background:var(--paper);
+    padding:20px 22px 22px;
+    display:flex;flex-direction:column;gap:10px;
+    min-height:220px;
+    position:relative;
+  }
+  .t-label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mute);
+  }
+  .t-title{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:22px;line-height:1.1;letter-spacing:-0.01em;
+    margin:2px 0 4px;
+  }
+  .t-desc{
+    font-size:13.5px;line-height:1.5;color:var(--ink-2);
+    flex:1;
+  }
+  .t-bar{
+    height:4px;background:var(--paper-2);border-radius:2px;position:relative;overflow:hidden;
+    margin-top:6px;
+  }
+  .t-bar::after{
+    content:"";position:absolute;inset:0;width:var(--w,50%);background:var(--accent);
+  }
+  .t-count{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;color:var(--mute);
+    display:flex;justify-content:space-between;
+  }
+  .t-count b{color:var(--ink);font-weight:500}
+
+  /* ========== SECTION HEADER ========== */
+  .sec-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:48px 0 18px;
+    padding-bottom:10px;
+    border-bottom:2px solid var(--ink);
+  }
+  .sec-h{
+    font-family:"Newsreader",serif;
+    font-weight:600;font-size:30px;letter-spacing:-0.015em;
+    margin:0;
+  }
+  .sec-meta{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);
+  }
+
+  /* ========== CATEGORY NAV ========== */
+  .catnav{
+    display:flex;flex-wrap:wrap;gap:6px;
+    margin-bottom:28px;
+  }
+  .catnav a{
+    text-decoration:none;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 13px 7px 11px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:999px;
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--ink);
+    transition:all .15s;
+  }
+  .catnav a:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+  .catnav a .n{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;color:var(--mute);
+    background:var(--paper-2);
+    padding:1px 6px;border-radius:999px;
+  }
+  .catnav a:hover .n{background:rgba(244,239,230,0.2);color:var(--paper)}
+
+  /* ========== CATEGORY SECTIONS ========== */
+  .cat-section{
+    margin-top:56px;
+    scroll-margin-top:20px;
+  }
+  .cat-header{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:end;
+    gap:20px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--ink);
+    margin-bottom:24px;
+  }
+  .cat-num{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:56px;font-weight:400;line-height:0.9;
+    color:var(--accent);
+    font-feature-settings:"tnum";
+  }
+  .cat-title{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:28px;line-height:1.1;letter-spacing:-0.015em;
+    margin:0;
+  }
+  .cat-title small{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;font-weight:400;
+    letter-spacing:0.15em;text-transform:uppercase;
+    color:var(--mute);margin-top:6px;
+  }
+  .cat-pill{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;
+    padding:4px 10px;
+    background:var(--ink);color:var(--paper);
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .papers{
+    display:grid;
+    grid-template-columns:repeat(var(--cols, 2), 1fr);
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+  }
+  /* Responsive column defaults — overridden when user picks a column count */
+  @media (min-width: 1400px){ :root{ --cols: 3 } }
+  @media (max-width: 1100px){ :root{ --cols: 2 } }
+  @media (max-width: 760px){ :root{ --cols: 1 } }
+  /* Explicit user choices win over media queries */
+  html[data-cols="1"]{ --cols: 1 !important }
+  html[data-cols="2"]{ --cols: 2 !important }
+  html[data-cols="3"]{ --cols: 3 !important }
+
+  /* Column toggle control */
+  .col-toggle{
+    position:fixed;
+    right:18px;bottom:18px;
+    display:flex;align-items:center;gap:4px;
+    background:var(--paper);
+    border:1px solid var(--ink);
+    padding:4px;
+    z-index:50;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+    box-shadow:0 8px 22px -14px rgba(26,22,19,0.35);
+  }
+  .col-toggle .lbl{
+    padding:0 8px 0 6px;color:var(--mute);
+  }
+  .col-toggle button{
+    appearance:none;
+    font:inherit;
+    background:transparent;color:var(--ink);
+    border:none;
+    padding:6px 10px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:4px;
+    transition:background .15s, color .15s;
+  }
+  .col-toggle button:hover{background:var(--paper-2)}
+  .col-toggle button[aria-pressed="true"]{
+    background:var(--ink);color:var(--paper);
+  }
+  .col-toggle .glyph{
+    display:inline-flex;gap:2px;
+  }
+  .col-toggle .glyph i{
+    display:block;width:3px;height:11px;background:currentColor;
+  }
+  @media print{ .col-toggle{display:none} }
+  @media (max-width:520px){ .col-toggle{right:10px;bottom:10px} }
+  .paper{
+    background:var(--card);
+    padding:22px 24px;
+    display:flex;flex-direction:column;gap:8px;
+    text-decoration:none;color:inherit;
+    transition:background .18s;
+    position:relative;
+  }
+  .paper:hover{background:var(--paper-2)}
+  .paper-year{
+    position:absolute;top:18px;right:22px;
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:14px;color:var(--mute);
+    font-feature-settings:"tnum";
+  }
+  .paper-tags{
+    display:flex;gap:6px;flex-wrap:wrap;
+    margin-bottom:2px;
+  }
+  .tag{
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:2px 7px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    color:var(--mute);
+  }
+  .tag.hot{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+  .tag.inter{background:#f3e4d5;color:#7a4318;border-color:#e4c9a8}
+  .tag.asd{background:#e0ddf0;color:#3c2f6b;border-color:#c7c2e3}
+  .tag.pc{background:#dce7dc;color:#2d4a2b;border-color:#b8ccb7}
+  .tag.clinic{background:#e5dcd8;color:#6b3628;border-color:#d0bfb8}
+
+  .paper-title{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:19px;line-height:1.2;letter-spacing:-0.005em;
+    margin:0;
+    padding-right:44px;
+    text-wrap:pretty;
+  }
+  .paper-authors{
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:13.5px;color:var(--mute);
+  }
+  .paper-summary{
+    font-size:13.5px;line-height:1.55;color:var(--ink-2);
+    margin-top:4px;
+    text-wrap:pretty;
+  }
+  .paper-read{
+    margin-top:auto;padding-top:10px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--mute);
+    display:flex;align-items:center;gap:6px;
+  }
+  .paper:hover .paper-read{color:var(--accent)}
+  .paper-read .arr{transition:transform .2s}
+  .paper:hover .paper-read .arr{transform:translateX(4px)}
+
+  /* Small categories single column */
+  .papers.single{grid-template-columns:1fr !important}
+
+  /* ========== FOOTER ========== */
+  footer{
+    margin-top:80px;
+    padding-top:20px;
+    border-top:3px double var(--ink);
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--mute);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  }
+
+  /* Responsive */
+  @media (max-width:980px){
+    .hero{grid-template-columns:1fr}
+    .hero-main{border-right:none;border-bottom:1px solid var(--rule);padding:24px 0}
+    .hero-side{padding:24px 0}
+    .themes{grid-template-columns:repeat(2,1fr)}
+    .hero-h{font-size:40px}
+  }
+  @media (max-width:600px){
+    .wrap{padding:20px 18px 60px}
+    .mast-title{font-size:30px}
+    .hero-h{font-size:32px}
+    .themes{grid-template-columns:1fr}
+    .cat-num{font-size:42px}
+    .cat-title{font-size:22px}
+    .paper-title{font-size:17px}
+  }
+</style>
+</head>
+<body>
+<!-- Column toggle -->
+<div class="col-toggle" role="group" aria-label="Column layout">
+  <span class="lbl">Layout</span>
+  <button data-cols="1" aria-pressed="false" title="Single column">
+    <span class="glyph"><i></i></span>1
+  </button>
+  <button data-cols="2" aria-pressed="false" title="Two columns">
+    <span class="glyph"><i></i><i></i></span>2
+  </button>
+  <button data-cols="3" aria-pressed="false" title="Three columns">
+    <span class="glyph"><i></i><i></i><i></i></span>3
+  </button>
+  <button data-cols="auto" aria-pressed="true" title="Responsive (auto)">Auto</button>
+</div>
+<script>
+  (function(){
+    var KEY = 'daily-brief-cols';
+    var html = document.documentElement;
+    var buttons = document.querySelectorAll('.col-toggle button');
+    function apply(choice){
+      if(choice === 'auto' || !choice){ html.removeAttribute('data-cols'); }
+      else { html.setAttribute('data-cols', choice); }
+      buttons.forEach(function(b){
+        b.setAttribute('aria-pressed', b.dataset.cols === (choice || 'auto') ? 'true' : 'false');
+      });
+    }
+    try { apply(localStorage.getItem(KEY) || 'auto'); } catch(e){ apply('auto'); }
+    buttons.forEach(function(b){
+      b.addEventListener('click', function(){
+        var c = b.dataset.cols;
+        apply(c);
+        try { localStorage.setItem(KEY, c); } catch(e){}
+      });
+    });
+  })();
+</script>
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <div class="mast">
+    <div class="mast-left">
+      <div class="mast-title">Daily Brief</div>
+      <div class="mast-sub">Neuroscience · 매일의 논문 요약</div>
+    </div>
+    <div class="mast-right">
+      Vol.&nbsp;2026 · Iss.&nbsp;04 · <b>April 19 2026</b><br>
+      Generated 11:11 KST
+    </div>
+  </div>
+
+  <div class="strap">
+    <span><span class="dot"></span>Today's Reading List · 26 articles</span>
+    <span>Window: today &nbsp;·&nbsp; Baseline: last 14 days</span>
+  </div>
+
+  <!-- HERO / LEAD STORY -->
+  <section class="hero">
+    <div class="hero-main">
+      <div class="kicker">Today's Through-line</div>
+      <h1 class="hero-h">몸이 마음을 <em>예측</em>한다</h1>
+      <p class="hero-lede">
+        오늘 도착한 26편 중 절반 가까이가 하나의 질문을 공유한다&mdash;
+        내부 신체 신호(interoception)와 베이지안 예측이 어떻게 자기감(self), 사회 인지, 그리고 정신·신경 질환의 병태생리를 형성하는가. 
+        Owens에서 Keysers, Seth에서 Klein에 이르기까지, 공통된 문법이 읽힌다.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><b>26</b><span>new articles</span></div>
+        <div class="stat"><b>8</b><span>categories</span></div>
+        <div class="stat"><b>4</b><span>cross-cutting themes</span></div>
+        <div class="stat"><b>12</b><span>papers 2026</span></div>
+      </div>
+    </div>
+
+    <div class="hero-side">
+      <div class="side-h">Theme Pulse · 교차 주제 밀도</div>
+      <div class="pulse-list">
+        <div class="pulse-item">
+          <div class="pulse-rank">01</div>
+          <div class="pulse-name">Interoception &amp; the Bodily Self
+            <small>내감각·자기인식·정서 조절</small>
+          </div>
+          <div>
+            <div class="pulse-bar" style="--w:100%"></div>
+            <div class="pulse-count">9 papers</div>
+          </div>
+        </div>
+        <div class="pulse-item">
+          <div class="pulse-rank">02</div>
+          <div class="pulse-name">Autism Spectrum Disorder
+            <small>ASD 예측·감각·사회 인지</small>
+          </div>
+          <div>
+            <div class="pulse-bar" style="--w:78%"></div>
+            <div class="pulse-count">7 papers</div>
+          </div>
+        </div>
+        <div class="pulse-item">
+          <div class="pulse-rank">03</div>
+          <div class="pulse-name">Predictive Coding / Bayesian
+            <small>베이지안 추론·예측 처리</small>
+          </div>
+          <div>
+            <div class="pulse-bar" style="--w:55%"></div>
+            <div class="pulse-count">5 papers</div>
+          </div>
+        </div>
+        <div class="pulse-item">
+          <div class="pulse-rank">04</div>
+          <div class="pulse-name">Circuit Modulation &amp; Therapy
+            <small>신경조절·임상 개입</small>
+          </div>
+          <div>
+            <div class="pulse-bar" style="--w:44%"></div>
+            <div class="pulse-count">4 papers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THEME DEEP-DIVE -->
+  <div class="sec-head">
+    <h2 class="sec-h">Top Themes</h2>
+    <div class="sec-meta">공통 주제 · 급부상 없음</div>
+  </div>
+
+  <div class="themes">
+    <div class="t-card">
+      <div class="t-label">Theme 01 · Largest</div>
+      <div class="t-title">Interoceptive Inference</div>
+      <div class="t-desc">
+        심장·내장 신호의 베이지안 추론이 자기감과 정서 조절의 중심축으로 떠오름.
+        Owens, Palmer, Critchley, Seth 등 여러 카테고리에서 반복 등장.
+      </div>
+      <div class="t-bar" style="--w:100%"></div>
+      <div class="t-count"><span>9 papers</span><b>36%</b></div>
+    </div>
+
+    <div class="t-card">
+      <div class="t-label">Theme 02 · High Volume</div>
+      <div class="t-title">ASD &amp; Prediction</div>
+      <div class="t-desc">
+        자폐 스펙트럼에서 prior 가중·감각 약화·내감각·미엘린 병리까지&mdash;
+        다층적 예측 결함 프레임이 반복된다.
+      </div>
+      <div class="t-bar" style="--w:78%"></div>
+      <div class="t-count"><span>7 papers</span><b>27%</b></div>
+    </div>
+
+    <div class="t-card">
+      <div class="t-label">Theme 03 · Recurring</div>
+      <div class="t-title">Bayesian Brains</div>
+      <div class="t-desc">
+        불확실성 하의 사회적 추론·예측 코딩·정밀도 가중치&mdash;
+        FeldmanHall, Keysers, Sapey-Triomphe가 같은 언어를 쓴다.
+      </div>
+      <div class="t-bar" style="--w:55%"></div>
+      <div class="t-count"><span>5 papers</span><b>19%</b></div>
+    </div>
+
+    <div class="t-card">
+      <div class="t-label">Theme 04 · Clinical</div>
+      <div class="t-title">Circuit-level Therapy</div>
+      <div class="t-desc">
+        피질-선조 자극, 하향성 통증 조절, 위약 진통&mdash;
+        회로 표적 개입으로의 전환이 임상 논문에서 또렷해진다.
+      </div>
+      <div class="t-bar" style="--w:44%"></div>
+      <div class="t-count"><span>4 papers</span><b>15%</b></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY NAV -->
+  <div class="sec-head">
+    <h2 class="sec-h">Today's Reading</h2>
+    <div class="sec-meta">8 categories · 26 articles</div>
+  </div>
+
+  <nav class="catnav">
+    <a href="#c1">Cognitive &amp; Computational <span class="n">7</span></a>
+    <a href="#c2">Psychiatry &amp; Behavioral <span class="n">7</span></a>
+    <a href="#c3">Metabolism &amp; Neurodev. <span class="n">4</span></a>
+    <a href="#c4">Consciousness &amp; Theory <span class="n">3</span></a>
+    <a href="#c5">Neuroimmunology <span class="n">2</span></a>
+    <a href="#c6">Cellular &amp; Molecular <span class="n">1</span></a>
+    <a href="#c7">Clinical <span class="n">1</span></a>
+    <a href="#c8">Health Tech &amp; Digital <span class="n">1</span></a>
+  </nav>
+
+  <!-- ====== CAT 1 ====== -->
+  <section class="cat-section" id="c1">
+    <div class="cat-header">
+      <div class="cat-num">01</div>
+      <div>
+        <h3 class="cat-title">Cognitive &amp; Computational Neuroscience
+          <small>베이지안 추론 · 예측 코딩 · 개념 공간</small>
+        </h3>
+      </div>
+      <div class="cat-pill">7 papers</div>
+    </div>
+    <div class="papers">
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2018%20-%20Owens%20et%20al.%20-%20Interoceptive%20inference%3B%20From%20computational%20neuroscience%20to%20clinic.pdf">
+        <span class="paper-year">2018</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag pc">Predictive</span><span class="tag clinic">Clinic</span></div>
+        <h4 class="paper-title">Interoceptive inference: from computational neuroscience to clinic</h4>
+        <div class="paper-authors">Owens et al.</div>
+        <p class="paper-summary">내적 정보의 베이지안 추론을 계산신경과학적으로 모델링하고, 이를 불안·우울·신체 증후 등 정신·신경 질환의 병태생리에 적용. 내적 신호의 예측 오류가 질환의 핵심 기전임을 제안한다.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2018%20-%20Palmer%2C%20Tsakiris%20-%20Going%20at%20the%20heart%20of%20social%20cognition%3B%20is%20there%20a%20role%20for%20interoception%20in%20self-other%20distinction.pdf">
+        <span class="paper-year">2018</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Social cog.</span></div>
+        <h4 class="paper-title">Going at the heart of social cognition: interoception in self-other distinction</h4>
+        <div class="paper-authors">Palmer &amp; Tsakiris</div>
+        <p class="paper-summary">내재감각 신호가 자기-타자 구별에 기여하는지 탐구. 외계감각과의 통합이 사회적 자기인식의 핵심 메커니즘임을 제안하며, ASD 환자의 내재감각 훈련 가능성을 제시.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2019%20-%20FeldmanHall%2C%20Shenhav%20-%20Resolving%20uncertainty%20in%20a%20social%20world.pdf">
+        <span class="paper-year">2019</span>
+        <div class="paper-tags"><span class="tag pc">Bayesian</span><span class="tag">Uncertainty</span></div>
+        <h4 class="paper-title">Resolving uncertainty in a social world</h4>
+        <div class="paper-authors">FeldmanHall &amp; Shenhav</div>
+        <p class="paper-summary">사회적 불확실성 해결에 베이지안 추론이 활용됨을 제안. 전전두피질과 측두정 영역이 핵심 역할을 하며, 자폐·정신병적 질환의 사회적 기능 장애 설명에 임상적 함의를 제공.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2020%20-%20Sapey%E2%80%90Triomphe%20et%20al.%20-%20Priors%20Bias%20Perceptual%20Decisions%20in%20Autism%2C%20But%20Are%20Less%20Flexibly%20Adjusted%20to%20the%20Context.pdf">
+        <span class="paper-year">2020</span>
+        <div class="paper-tags"><span class="tag asd">ASD</span><span class="tag pc">Priors</span></div>
+        <h4 class="paper-title">Priors bias perceptual decisions in autism, but are less flexibly adjusted to context</h4>
+        <div class="paper-authors">Sapey-Triomphe et al.</div>
+        <p class="paper-summary">ASD 참여자는 prior expectation에 더 강하게 의존하지만 단서 신뢰도 변화 시 동적 조정이 저하됨. Bayesian observer model로 α 높음·κ 낮음 패턴을 정량화하고 맥락 기반 훈련 가능성을 제시.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2024%20-%20Keysers%20et%20al.%20-%20Predictive%20coding%20for%20the%20actions%20and%20emotions%20of%20others%20and%20its%20deficits%20in%20autism%20spectrum%20disorders.pdf">
+        <span class="paper-year">2024</span>
+        <div class="paper-tags"><span class="tag pc">Predictive</span><span class="tag asd">ASD</span></div>
+        <h4 class="paper-title">Predictive coding for actions and emotions of others, and its deficits in ASD</h4>
+        <div class="paper-authors">Keysers et al.</div>
+        <p class="paper-summary">타인의 행동·감정 추론에 예측 코딩 체계가 핵심. 상향식 인식과 하향식 예측의 정밀도 가중치가 사회적 정보 처리를 어떻게 결정하는지 설명하며, ASD의 정밀도 조절 결함을 종합.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2026%20-%20Eperon%20et%20al.%20-%20Action%20information%20is%20integrated%20into%20entorhinal%20representations%20of%20conceptual%20space%20and%20is%20reflected%20in%20eye%20movements.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">Entorhinal</span></div>
+        <h4 class="paper-title">Action information integrated into entorhinal representations of conceptual space</h4>
+        <div class="paper-authors">Eperon et al.</div>
+        <p class="paper-summary">수학적 연산으로 상태 전환을 학습하는 과제에서 내측비강피개가 행동 정보를 개념 공간 내에 부호화. 눈 움직임 패턴이 행동 기반 표현과 연동됨을 관찰.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Cognitive%20and%20Computational%20Neuroscience/2026%20-%20Frisby%20et%20al.%20-%20All%20spectral%20frequencies%20of%20neural%20activity%20reveal%20semantic%20representation%20in%20the%20human%20anterior%20ventral%20temporal%20cortex.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">ECoG</span></div>
+        <h4 class="paper-title">All spectral frequencies reveal semantic representation in human anterior vATL</h4>
+        <div class="paper-authors">Frisby et al.</div>
+        <p class="paper-summary">vATL에서 감마대 고주파수뿐 아니라 저주파수 대역도 의미(animacy) 정보를 담음을 ECoG로 입증. 뇌의 의미 표상이 여러 주파수 대역에 분산 인코딩될 수 있다는 근거.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 2 ====== -->
+  <section class="cat-section" id="c2">
+    <div class="cat-header">
+      <div class="cat-num">02</div>
+      <div>
+        <h3 class="cat-title">Psychiatry &amp; Behavioral Neuroscience
+          <small>내감각 이상 · ASD · 정서 조절 · 회로 자극</small>
+        </h3>
+      </div>
+      <div class="cat-pill">7 papers</div>
+    </div>
+    <div class="papers">
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2019%20-%20Critchley%20et%20al.%20-%20Transdiagnostic%20expression%20of%20interoceptive%20abnormalities%20in%20psychiatric%20conditions.pdf">
+        <span class="paper-year">2019</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Transdiagnostic</span></div>
+        <h4 class="paper-title">Transdiagnostic expression of interoceptive abnormalities in psychiatric conditions</h4>
+        <div class="paper-authors">Critchley et al.</div>
+        <p class="paper-summary">2차 정신건강 환자군에서 심장 내감각 정확도는 감소하고 자기보고 민감도는 증가. 이는 특정 진단에 국한되지 않는 공통 신경생리학적 표지일 수 있음을 시사.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2024%20-%20Loureiro%20et%20al.%20-%20Interoception%20in%20Autism%3A%20A%20Narrative%20Review%20of%20Behavioral%20and%20Neurobiological%20Data.pdf">
+        <span class="paper-year">2024</span>
+        <div class="paper-tags"><span class="tag asd">ASD</span><span class="tag inter">Interoception</span><span class="tag">Review</span></div>
+        <h4 class="paper-title">Interoception in autism: a narrative review of behavioral and neurobiological data</h4>
+        <div class="paper-authors">Loureiro et al.</div>
+        <p class="paper-summary">ASD에서 내향감각 처리가 증상에 관여하는 방식을 체계적으로 고찰. 평가 도구 한계, 인지·감각운동 시스템과의 상호작용, 신경회로 변화를 통합 검토.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2025%20-%20Alfi%CC%80%20et%20al.%20-%20Interoceptive%20sensibility%20mediates%20emotional%20dysregulation%3B%20Insights%20from%20individuals%20with%20Bipolar%20II%20Depression.pdf">
+        <span class="paper-year">2025</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Bipolar II</span></div>
+        <h4 class="paper-title">Interoceptive sensibility mediates emotional dysregulation in Bipolar II depression</h4>
+        <div class="paper-authors">Alfì et al.</div>
+        <p class="paper-summary">양극성 II 우울증 환자에서 내감각 감수성이 정서 조절 장애를 매개함을 확인. 내감각 훈련이 치료적 표적이 될 수 있음을 시사.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2025%20-%20Klein%20et%20al.%20-%20Interoception%20in%20individuals%20with%20autism%20spectrum%20disorder%3B%20a%20systematic%20literature%20review%20and%20meta-analysis.pdf">
+        <span class="paper-year">2025</span>
+        <div class="paper-tags"><span class="tag asd">ASD</span><span class="tag inter">Interoception</span><span class="tag">Meta</span></div>
+        <h4 class="paper-title">Interoception in ASD: a systematic review and meta-analysis</h4>
+        <div class="paper-authors">Klein et al.</div>
+        <p class="paper-summary">ASD 환자는 대조군 대비 내감각 정확도·인식 수준이 유의하게 저하(Cohen's d ≈ 0.5). 알렉시티미아·불안이 조절 변수. 신경심리적 평가와 감정 조절 훈련의 필요성을 강조.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2025%20-%20Koreki%20et%20al.%20-%20Reduced%20sensory%20attenuation%20is%20related%20to%20aberrant%20interoceptive%20influences%20on%20intentional%20binding%20in%20schizophrenia.pdf">
+        <span class="paper-year">2025</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Schizophrenia</span></div>
+        <h4 class="paper-title">Reduced sensory attenuation relates to aberrant interoceptive influences in schizophrenia</h4>
+        <div class="paper-authors">Koreki et al.</div>
+        <p class="paper-summary">조현병에서 감각 약화 감소와 내면 감각의 비정상적 영향이 의도적 결합 과제에서 관찰됨. 자기관 결함을 설명하는 감각-내감각 상호작용의 중요성을 강조.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2026%20-%20Panker%20et%20al.%20-%20Vitamin%20D%20Supplementation%20in%20Adults%20with%20Depressive%20Disorder%3B%20A%20Retrospective%20Record%20Review%20of%20a%20Patient%20Panel.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag clinic">Clinical</span></div>
+        <h4 class="paper-title">Vitamin D supplementation in adults with depressive disorder</h4>
+        <div class="paper-authors">Panker et al.</div>
+        <p class="paper-summary">우울 장애 성인 patient panel에서 비타민 D 보충 전후 PHQ-9 변화를 후향 분석. 평균 우울 점수가 유의 감소, 특히 결핍 환자에서 호전 폭이 컸다.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Psychiatry%20and%20Behavioral%20Neuroscience/2026%20-%20Zhang%20et%20al.%20-%20Regulation%20of%20autism-related%20self-injurious%20behavior%20by%20electrical%20stimulation%20of%20corticostriatal%20circuits%20in%20mice%20and%20humans.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag asd">ASD</span><span class="tag clinic">DBS</span></div>
+        <h4 class="paper-title">Corticostriatal stimulation regulates autism-related self-injurious behavior</h4>
+        <div class="paper-authors">Zhang et al.</div>
+        <p class="paper-summary">자폐 모델 마우스와 인간에서 피질-선조 회로 전기 자극이 반복적 자해 행동을 유의하게 감소시킴. 자폐 관련 자해의 개인 맞춤형 신경조절 치료 가능성을 제시.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 3 ====== -->
+  <section class="cat-section" id="c3">
+    <div class="cat-header">
+      <div class="cat-num">03</div>
+      <div>
+        <h3 class="cat-title">Metabolism &amp; Neurodevelopment
+          <small>미토콘드리아 일주기 · 저혈당 · 혈당 개인차</small>
+        </h3>
+      </div>
+      <div class="cat-pill">4 papers</div>
+    </div>
+    <div class="papers">
+
+      <a class="paper" href="../Metabolism%20and%20Neurodevelopment/2019%20-%20Weinrich%20et%20al.%20-%20A%20day%20in%20the%20life%20of%20mitochondria%20reveals%20shifting%20workloads.pdf">
+        <span class="paper-year">2019</span>
+        <div class="paper-tags"><span class="tag">Mitochondria</span><span class="tag">Circadian</span></div>
+        <h4 class="paper-title">A day in the life of mitochondria reveals shifting workloads</h4>
+        <div class="paper-authors">Weinrich et al.</div>
+        <p class="paper-summary">미토콘드리아의 ATP 생성·ADP/ATP 비율이 하루 중 역동적으로 변함. ATP는 ZT0에서 최고, 일주기적 변화는 간세포의 에너지 수요 전환을 반영.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Metabolism%20and%20Neurodevelopment/2026%20-%20Bowman%20et%20al.%20-%20The%20effect%20of%20hypoglycaemia%20on%20neurodevelopment%3B%20insights%20from%20congenital%20hyperinsulinism.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">Hypoglycaemia</span></div>
+        <h4 class="paper-title">The effect of hypoglycaemia on neurodevelopment</h4>
+        <div class="paper-authors">Bowman et al.</div>
+        <p class="paper-summary">저혈당에 노출된 영아는 신경글리코페니아·장기 신경장애 위험에 처하며, 선천성 고인슐린혈증은 독특한 연구 모델 제공. 조기 개입 표적을 밝힐 수 있음.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Metabolism%20and%20Neurodevelopment/2026%20-%20Deng%20et%20al.%20-%20Ceruloplasmin%20deficiency%20drives%20a%20fusiform-centric%20lipid%E2%80%93myelin%20pathology%20underlying%20a%20visual%20subtype%20in%20autism.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag asd">ASD</span><span class="tag">Iron/Myelin</span></div>
+        <h4 class="paper-title">Ceruloplasmin deficiency drives a fusiform lipid–myelin pathology in autism</h4>
+        <div class="paper-authors">Deng et al.</div>
+        <p class="paper-summary">ASD에서 세룰로플라스민 결핍이 fusiform gyrus의 지질·미엘린 병리를 유발. 시각 하위유형을 형성하는 기전으로, 철 대사 표적 치료 전략 제시.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Metabolism%20and%20Neurodevelopment/2026%20-%20Jing%20et%20al.%20-%20Multimorbidity%20defines%20glycaemic%20individuality%20in%20ageing.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">Ageing</span></div>
+        <h4 class="paper-title">Multimorbidity defines glycaemic individuality in ageing</h4>
+        <div class="paper-authors">Jing et al.</div>
+        <p class="paper-summary">노인에서 단일 질환보다 여러 만성질환 공존이 혈당 조절 악화의 주요 원인. 혈당 관리가 개별 질환 아닌 다중만성질환 프로필 기반이어야 함을 시사.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 4 ====== -->
+  <section class="cat-section" id="c4">
+    <div class="cat-header">
+      <div class="cat-num">04</div>
+      <div>
+        <h3 class="cat-title">Consciousness &amp; Theoretical Neuroscience
+          <small>신체적 자기 · 예측 처리 · 의식 이론</small>
+        </h3>
+      </div>
+      <div class="cat-pill">3 papers</div>
+    </div>
+    <div class="papers">
+
+      <a class="paper" href="../Consciousness%20and%20Theoretical%20Neuroscience/2018%20-%20Seth%20et%20al.%20-%20Being%20a%20Beast%20Machine%20The%20Somatic%20Basis%20of%20Selfhood.pdf">
+        <span class="paper-year">2018</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Selfhood</span></div>
+        <h4 class="paper-title">Being a beast machine: the somatic basis of selfhood</h4>
+        <div class="paper-authors">Seth et al.</div>
+        <p class="paper-summary">자기 인식이 내부 신체 신호에 뿌리를 두며 예측 처리 프레임워크로 설명 가능. '도구적 내수성 추론' 개념으로 항상성 유지와 정서·신체 소유감을 통합 설명.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Consciousness%20and%20Theoretical%20Neuroscience/2024%20-%20Wu%20et%20al.%20-%20Individual%20Differences%20in%20Bodily%20Self-Consciousness%20and%20Its%20Neural%20Basis.pdf">
+        <span class="paper-year">2024</span>
+        <div class="paper-tags"><span class="tag inter">Interoception</span><span class="tag">Multisensory</span></div>
+        <h4 class="paper-title">Individual differences in bodily self-consciousness and its neural basis</h4>
+        <div class="paper-authors">Wu et al.</div>
+        <p class="paper-summary">신체 자각은 내·외부 자기 정보 통합에 의존하며 개인차가 크다. 三層自我 모델로 내수용·다감각·자기-타자 수준을 체계화하고 대응 신경망을 제시.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Consciousness%20and%20Theoretical%20Neuroscience/2026%20-%20DeBrota%2C%20List%20-%20Consciousness%2C%20Quantum%20Mechanics%2C%20and%20the%20Limits%20of%20Scientific%20Objectivism.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">Philosophy</span></div>
+        <h4 class="paper-title">Consciousness, quantum mechanics, and the limits of scientific objectivism</h4>
+        <div class="paper-authors">DeBrota &amp; List</div>
+        <p class="paper-summary">의식과 양자역학이 모두 과학적 객관주의의 한계를 보여주는 현상이라 지적. 전통적 제3자 관찰 방법론으로 포착 어려움을 논증하고 두 영역의 공통점을 탐구.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 5 ====== -->
+  <section class="cat-section" id="c5">
+    <div class="cat-header">
+      <div class="cat-num">05</div>
+      <div>
+        <h3 class="cat-title">Neuroimmunology &amp; Inflammation
+          <small>염증노화 · 혈관-면역 관문</small>
+        </h3>
+      </div>
+      <div class="cat-pill">2 papers</div>
+    </div>
+    <div class="papers">
+
+      <a class="paper" href="../Neuroimmunology%20and%20Inflammation/2025%20-%20Mishra%20et%20al.%20-%20Exoproteome%20of%20calorie-restricted%20humans%20identifies%20complement%20deactivation%20as%20an%20immunometabolic%20checkpoint%20reducing%20inflammaging.pdf">
+        <span class="paper-year">2025</span>
+        <div class="paper-tags"><span class="tag">CR/Complement</span><span class="tag">Inflammaging</span></div>
+        <h4 class="paper-title">Complement deactivation as an immunometabolic checkpoint reducing inflammaging</h4>
+        <div class="paper-authors">Mishra et al.</div>
+        <p class="paper-summary">칼로리 제한 인간의 exoproteome 분석으로 보체 시스템 비활성화가 확인됨. 노화 관련 만성 염증을 감소시키는 면역대사 체크포인트로 작용하며 신경퇴행 치료 표적 가능성.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+      <a class="paper" href="../Neuroimmunology%20and%20Inflammation/2026%20-%20Vinnell%20et%20al.%20-%20Vascular%20gatekeepers%20of%20central%20nervous%20system%20immunity.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">BBB</span></div>
+        <h4 class="paper-title">Vascular gatekeepers of central nervous system immunity</h4>
+        <div class="paper-authors">Vinnell et al.</div>
+        <p class="paper-summary">뇌혈관 내피·주변세포·성상돌기가 백혈구 침입·제거의 관문 역할. 단일세포 전사체로 혈관 서브셋의 면역 조절 분자를 확인. 다발성경화증·알츠하이머 표적 전략으로 유망.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 6 ====== -->
+  <section class="cat-section" id="c6">
+    <div class="cat-header">
+      <div class="cat-num">06</div>
+      <div>
+        <h3 class="cat-title">Cellular &amp; Molecular Neuroscience
+          <small>기계적 기억 · 세포 이동</small>
+        </h3>
+      </div>
+      <div class="cat-pill">1 paper</div>
+    </div>
+    <div class="papers single">
+
+      <a class="paper" href="../Cellular%20and%20Molecular%20Neuroscience/2025%20-%20Lee%20et%20al.%20-%20Mechanical%20Memory%20Primes%20Cells%20for%20Confined%20Migration.pdf">
+        <span class="paper-year">2025</span>
+        <div class="paper-tags"><span class="tag">NFAT</span><span class="tag">Migration</span></div>
+        <h4 class="paper-title">Mechanical memory primes cells for confined migration</h4>
+        <div class="paper-authors">Lee et al.</div>
+        <p class="paper-summary">기질 강성에 노출된 세포는 NFAT 전사인자를 통해 비일시적 기계 기억을 형성하며, 이 기억이 제한된 공간에서의 이동성을 향상시킨다. 뇌 발달·신경교종 침투·신경염증 시 면역세포 이동에 기계적 기억이 관여할 가능성을 시사.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 7 ====== -->
+  <section class="cat-section" id="c7">
+    <div class="cat-header">
+      <div class="cat-num">07</div>
+      <div>
+        <h3 class="cat-title">Clinical Neuroscience &amp; Disorders
+          <small>위약 진통 · 하향성 조절</small>
+        </h3>
+      </div>
+      <div class="cat-pill">1 paper</div>
+    </div>
+    <div class="papers single">
+
+      <a class="paper" href="../Clinical%20Neuroscience%20and%20Disorders/2026%20-%20Livrizzi%20et%20al.%20-%20Top-down%20control%20of%20the%20descending%20pain%20modulatory%20system%20drives%20multimodal%20placebo%20analgesia.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag clinic">Placebo</span><span class="tag">Pain</span></div>
+        <h4 class="paper-title">Top-down control of descending pain modulation drives multimodal placebo analgesia</h4>
+        <div class="paper-authors">Livrizzi et al.</div>
+        <p class="paper-summary">인간에서 기대 조작으로 시각·청각·촉각 위약 진통 효과를 측정하고 fMRI로 전전두엽이 하향성 통증 조절 시스템(PAG, RVM)을 top-down 활성화시킴을 입증. 전전두엽-PAG 연결성이 위약 반응 크기를 예측.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ====== CAT 8 ====== -->
+  <section class="cat-section" id="c8">
+    <div class="cat-header">
+      <div class="cat-num">08</div>
+      <div>
+        <h3 class="cat-title">Health Technology &amp; Digital Interventions
+          <small>LLM · 공중 건강</small>
+        </h3>
+      </div>
+      <div class="cat-pill">1 paper</div>
+    </div>
+    <div class="papers single">
+
+      <a class="paper" href="../Health%20Technology%20and%20Digital%20Interventions/2026%20-%20Costa-Gomes%20et%20al.%20-%20Public%20use%20of%20a%20generalist%20LLM%20chatbot%20for%20health%20queries.pdf">
+        <span class="paper-year">2026</span>
+        <div class="paper-tags"><span class="tag hot">New 2026</span><span class="tag">LLM</span><span class="tag">Public Health</span></div>
+        <h4 class="paper-title">Public use of a generalist LLM chatbot for health queries</h4>
+        <div class="paper-authors">Costa-Gomes et al.</div>
+        <p class="paper-summary">500,000건 이상 익명화된 건강 문의 분석으로 일반 목적 LLM 챗봇 사용 패턴·응답 품질을 대규모로 분석. 정신건강 관련 문의가 상당 비중, 전반적 정확도는 높지만 일부 정신의학적 상황에서 오답·부적절 안내가 관찰됨.</p>
+        <div class="paper-read">Read PDF <span class="arr">→</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <footer>
+    <span>Daily Brief · Neuroscience Edition</span>
+    <span>Window: today · Baseline: last 14 days</span>
+    <span>26 articles · 8 categories · 4 themes</span>
+  </footer>
+
+</div>
+</body>
+</html>

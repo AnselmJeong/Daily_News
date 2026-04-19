@@ -1,0 +1,179 @@
+{
+  "categories": {
+    "Cellular and Molecular Neuroscience": [
+      "2025 - Lee et al. - Mechanical Memory Primes Cells for Confined Migration.pdf"
+    ],
+    "Metabolism and Neurodevelopment": [
+      "2019 - Weinrich et al. - A day in the life of mitochondria reveals shifting workloads.pdf",
+      "2026 - Bowman et al. - The effect of hypoglycaemia on neurodevelopment; insights from congenital hyperinsulinism.pdf",
+      "2026 - Deng et al. - Ceruloplasmin deficiency drives a fusiform-centric lipid–myelin pathology underlying a visual subtype in autism.pdf",
+      "2026 - Jing et al. - Multimorbidity defines glycaemic individuality in ageing.pdf"
+    ],
+    "Neuroimmunology and Inflammation": [
+      "2025 - Mishra et al. - Exoproteome of calorie-restricted humans identifies complement deactivation as an immunometabolic checkpoint reducing inflammaging.pdf",
+      "2026 - Vinnell et al. - Vascular gatekeepers of central nervous system immunity.pdf"
+    ],
+    "Cognitive and Computational Neuroscience": [
+      "2018 - Owens et al. - Interoceptive inference; From computational neuroscience to clinic.pdf",
+      "2018 - Palmer, Tsakiris - Going at the heart of social cognition; is there a role for interoception in self-other distinction.pdf",
+      "2019 - FeldmanHall, Shenhav - Resolving uncertainty in a social world.pdf",
+      "2020 - Sapey‐Triomphe et al. - Priors Bias Perceptual Decisions in Autism, But Are Less Flexibly Adjusted to the Context.pdf",
+      "2024 - Keysers et al. - Predictive coding for the actions and emotions of others and its deficits in autism spectrum disorders.pdf",
+      "2026 - Eperon et al. - Action information is integrated into entorhinal representations of conceptual space and is reflected in eye movements.pdf",
+      "2026 - Frisby et al. - All spectral frequencies of neural activity reveal semantic representation in the human anterior ventral temporal cortex.pdf"
+    ],
+    "Psychiatry and Behavioral Neuroscience": [
+      "2019 - Critchley et al. - Transdiagnostic expression of interoceptive abnormalities in psychiatric conditions.pdf",
+      "2024 - Loureiro et al. - Interoception in Autism: A Narrative Review of Behavioral and Neurobiological Data.pdf",
+      "2025 - Alfì et al. - Interoceptive sensibility mediates emotional dysregulation; Insights from individuals with Bipolar II Depression.pdf",
+      "2025 - Klein et al. - Interoception in individuals with autism spectrum disorder; a systematic literature review and meta-analysis.pdf",
+      "2025 - Koreki et al. - Reduced sensory attenuation is related to aberrant interoceptive influences on intentional binding in schizophrenia.pdf",
+      "2026 - Panker et al. - Vitamin D Supplementation in Adults with Depressive Disorder; A Retrospective Record Review of a Patient Panel.pdf",
+      "2026 - Zhang et al. - Regulation of autism-related self-injurious behavior by electrical stimulation of corticostriatal circuits in mice and humans.pdf"
+    ],
+    "Clinical Neuroscience and Disorders": [
+      "2026 - Livrizzi et al. - Top-down control of the descending pain modulatory system drives multimodal placebo analgesia.pdf"
+    ],
+    "Consciousness and Theoretical Neuroscience": [
+      "2018 - Seth et al. - Being a Beast Machine The Somatic Basis of Selfhood.pdf",
+      "2024 - Wu et al. - Individual Differences in Bodily Self-Consciousness and Its Neural Basis.pdf",
+      "2026 - DeBrota, List - Consciousness, Quantum Mechanics, and the Limits of Scientific Objectivism.pdf"
+    ],
+    "Health Technology and Digital Interventions": [
+      "2026 - Costa-Gomes et al. - Public use of a generalist LLM chatbot for health queries.pdf"
+    ]
+  },
+  "files": {
+    "2018 - Owens et al. - Interoceptive inference; From computational neuroscience to clinic.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.086592",
+      "confidence": "HIGH"
+    },
+    "2018 - Palmer, Tsakiris - Going at the heart of social cognition; is there a role for interoception in self-other distinction.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.086992",
+      "confidence": "HIGH"
+    },
+    "2018 - Seth et al. - Being a Beast Machine The Somatic Basis of Selfhood.pdf": {
+      "category": "Consciousness and Theoretical Neuroscience",
+      "added": "2026-04-19T10:41:21.087267",
+      "confidence": "HIGH"
+    },
+    "2019 - Critchley et al. - Transdiagnostic expression of interoceptive abnormalities in psychiatric conditions.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.087544",
+      "confidence": "HIGH"
+    },
+    "2019 - FeldmanHall, Shenhav - Resolving uncertainty in a social world.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.087775",
+      "confidence": "HIGH"
+    },
+    "2019 - Weinrich et al. - A day in the life of mitochondria reveals shifting workloads.pdf": {
+      "category": "Metabolism and Neurodevelopment",
+      "added": "2026-04-19T10:41:21.088033",
+      "confidence": "HIGH"
+    },
+    "2020 - Sapey‐Triomphe et al. - Priors Bias Perceptual Decisions in Autism, But Are Less Flexibly Adjusted to the Context.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.088272",
+      "confidence": "HIGH"
+    },
+    "2024 - Keysers et al. - Predictive coding for the actions and emotions of others and its deficits in autism spectrum disorders.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.088473",
+      "confidence": "HIGH"
+    },
+    "2024 - Loureiro et al. - Interoception in Autism: A Narrative Review of Behavioral and Neurobiological Data.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.088679",
+      "confidence": "HIGH"
+    },
+    "2024 - Wu et al. - Individual Differences in Bodily Self-Consciousness and Its Neural Basis.pdf": {
+      "category": "Consciousness and Theoretical Neuroscience",
+      "added": "2026-04-19T10:41:21.088878",
+      "confidence": "HIGH"
+    },
+    "2025 - Alfì et al. - Interoceptive sensibility mediates emotional dysregulation; Insights from individuals with Bipolar II Depression.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.089115",
+      "confidence": "HIGH"
+    },
+    "2025 - Klein et al. - Interoception in individuals with autism spectrum disorder; a systematic literature review and meta-analysis.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.089356",
+      "confidence": "HIGH"
+    },
+    "2025 - Koreki et al. - Reduced sensory attenuation is related to aberrant interoceptive influences on intentional binding in schizophrenia.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.089573",
+      "confidence": "HIGH"
+    },
+    "2025 - Lee et al. - Mechanical Memory Primes Cells for Confined Migration.pdf": {
+      "category": "Cellular and Molecular Neuroscience",
+      "added": "2026-04-19T10:41:21.089818",
+      "confidence": "HIGH"
+    },
+    "2025 - Mishra et al. - Exoproteome of calorie-restricted humans identifies complement deactivation as an immunometabolic checkpoint reducing inflammaging.pdf": {
+      "category": "Neuroimmunology and Inflammation",
+      "added": "2026-04-19T10:41:21.090045",
+      "confidence": "HIGH"
+    },
+    "2026 - Bowman et al. - The effect of hypoglycaemia on neurodevelopment; insights from congenital hyperinsulinism.pdf": {
+      "category": "Metabolism and Neurodevelopment",
+      "added": "2026-04-19T10:41:21.090254",
+      "confidence": "HIGH"
+    },
+    "2026 - Costa-Gomes et al. - Public use of a generalist LLM chatbot for health queries.pdf": {
+      "category": "Health Technology and Digital Interventions",
+      "added": "2026-04-19T10:41:21.090748",
+      "confidence": "HIGH"
+    },
+    "2026 - DeBrota, List - Consciousness, Quantum Mechanics, and the Limits of Scientific Objectivism.pdf": {
+      "category": "Consciousness and Theoretical Neuroscience",
+      "added": "2026-04-19T10:41:21.090943",
+      "confidence": "HIGH"
+    },
+    "2026 - Deng et al. - Ceruloplasmin deficiency drives a fusiform-centric lipid–myelin pathology underlying a visual subtype in autism.pdf": {
+      "category": "Metabolism and Neurodevelopment",
+      "added": "2026-04-19T10:41:21.091174",
+      "confidence": "HIGH"
+    },
+    "2026 - Eperon et al. - Action information is integrated into entorhinal representations of conceptual space and is reflected in eye movements.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.091495",
+      "confidence": "HIGH"
+    },
+    "2026 - Frisby et al. - All spectral frequencies of neural activity reveal semantic representation in the human anterior ventral temporal cortex.pdf": {
+      "category": "Cognitive and Computational Neuroscience",
+      "added": "2026-04-19T10:41:21.091704",
+      "confidence": "HIGH"
+    },
+    "2026 - Jing et al. - Multimorbidity defines glycaemic individuality in ageing.pdf": {
+      "category": "Metabolism and Neurodevelopment",
+      "added": "2026-04-19T10:41:21.091897",
+      "confidence": "MED"
+    },
+    "2026 - Livrizzi et al. - Top-down control of the descending pain modulatory system drives multimodal placebo analgesia.pdf": {
+      "category": "Clinical Neuroscience and Disorders",
+      "added": "2026-04-19T10:41:21.092388",
+      "confidence": "HIGH"
+    },
+    "2026 - Panker et al. - Vitamin D Supplementation in Adults with Depressive Disorder; A Retrospective Record Review of a Patient Panel.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.092816",
+      "confidence": "HIGH"
+    },
+    "2026 - Vinnell et al. - Vascular gatekeepers of central nervous system immunity.pdf": {
+      "category": "Neuroimmunology and Inflammation",
+      "added": "2026-04-19T10:41:21.093014",
+      "confidence": "HIGH"
+    },
+    "2026 - Zhang et al. - Regulation of autism-related self-injurious behavior by electrical stimulation of corticostriatal circuits in mice and humans.pdf": {
+      "category": "Psychiatry and Behavioral Neuroscience",
+      "added": "2026-04-19T10:41:21.093227",
+      "confidence": "HIGH"
+    }
+  },
+  "version": 1
+}

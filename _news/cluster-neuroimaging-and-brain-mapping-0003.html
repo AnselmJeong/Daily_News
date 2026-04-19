@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>임상 뇌 연결 네트워크 분석 · Cluster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700&family=IBM+Plex+Sans+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4efe6;--paper-2:#ebe5d8;--ink:#1a1613;--ink-2:#3a332d;
+--mute:#7a7065;--rule:#d9d1c1;--card:#fbf7ee;--accent:#9c2a1a;--accent-3:#b5821f}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);
+font-family:"IBM Plex Sans KR","Newsreader",sans-serif;font-size:15px;line-height:1.55}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:36px 40px 80px}
+.mast{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink);
+padding:14px 0 10px;display:flex;align-items:baseline;justify-content:space-between}
+.mast-title{font-family:"Newsreader",serif;font-weight:700;font-size:32px;font-style:italic}
+.back{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.1em;text-transform:uppercase;color:var(--mute)}
+h1.ct{font-family:"Newsreader",serif;font-weight:500;font-size:44px;
+margin:28px 0 8px;letter-spacing:-0.02em}
+.ct-meta{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px}
+.ct-summary{font-size:16px;color:var(--ink-2);margin-bottom:32px}
+.ct-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+background:var(--rule);border:1px solid var(--rule);margin-bottom:36px}
+.ct-stat{background:var(--card);padding:16px 20px}
+.ct-stat b{display:block;font-family:"Newsreader",serif;font-weight:500;
+font-size:26px}
+.ct-stat span{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute)}
+.ct-section{margin:40px 0}
+.ct-section h2{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);
+border-bottom:1px solid var(--rule);padding-bottom:6px;margin-bottom:14px}
+.name-hist{display:flex;flex-direction:column;gap:4px}
+.name-hist-row{display:flex;gap:12px;align-items:baseline;padding:4px 0}
+.name-hist-date{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);min-width:100px}
+.name-hist-name{font-family:"Newsreader",serif;font-size:16px}
+.name-hist-reason{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--accent-3);margin-left:auto}
+.event-row{display:flex;gap:12px;align-items:baseline;padding:8px 0;
+border-bottom:1px dashed var(--rule)}
+.event-date{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);min-width:100px}
+.event-type{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;
+border:1px solid var(--rule);border-radius:3px;min-width:80px;text-align:center}
+.event-type.born{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.event-type.extended{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.event-type.renamed{background:var(--accent-3);color:var(--paper);border-color:var(--accent-3)}
+.event-type.revived{background:#4a7a3c;color:var(--paper);border-color:#4a7a3c}
+.event-body{flex:1;font-size:13.5px;color:var(--ink-2)}
+.members{display:flex;flex-direction:column;gap:1px;background:var(--rule);
+border:1px solid var(--rule)}
+.member{background:var(--card);padding:10px 14px;display:flex;gap:12px;
+align-items:baseline;font-size:13.5px}
+.member-date{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+color:var(--mute);min-width:90px}
+.member-title{flex:1}
+.member-title a{text-decoration:none}
+.spark-big{display:flex;align-items:flex-end;gap:3px;height:60px;
+background:var(--card);padding:10px;border:1px solid var(--rule)}
+.spark-big span{display:block;flex:1;background:var(--ink-2);
+opacity:0.2;border-radius:2px;min-height:3px}
+.spark-big span.has{opacity:0.85;background:var(--accent)}
+.spark-big span.future{opacity:0.05}
+.spark-label{font-family:"JetBrains Mono",monospace;font-size:9.5px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+margin-top:6px;display:flex;justify-content:space-between}
+</style>
+</head><body><div class="wrap">
+  <div class="mast">
+    <div class="mast-title">Cluster</div>
+    <a class="back" href="index.html">← index</a>
+  </div>
+  <h1 class="ct">임상 뇌 연결 네트워크 분석</h1>
+  <div class="ct-meta">
+    Neuroimaging and Brain Mapping · uid neuroimaging-and-brain-mapping-0003 · status active
+    · created 2026-04-19 · updated 2026-04-19
+  </div>
+  <p class="ct-summary">이 주제는 뇌의 연결성 및 네트워크 매핑을 활용하여 정신·신경 질환의 기전과 치료 반응을 규명하는 연구를 포괄한다. 다중 양식 영상 및 전기생리학적 데이터를 통합하고 엄격한 통계적 모델을 적용함으로써 네트워크 수준에서 질환 특이적 패턴을 발견하고 예측 가능한 지표를 도출하는 것을 목표로 한다.</p>
+  <div class="ct-stats">
+    <div class="ct-stat"><b>3</b><span>members</span></div>
+    <div class="ct-stat"><b>1</b><span>events</span></div>
+    <div class="ct-stat"><b>1</b><span>names</span></div>
+    <div class="ct-stat"><b>0</b><span>days old</span></div>
+  </div>
+
+  <div class="ct-section"><h2>Weekly cadence · last 26 weeks</h2>
+    <div class="spark-big"><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="" style="height:4%" title="0편"></span><span class="has" style="height:100%" title="3편"></span></div>
+    <div class="spark-label"><span>2025-10-19</span><span>now</span></div>
+  </div>
+
+  <div class="ct-section"><h2>Keywords</h2><p>brain connectivity · clinical connectomics · network mapping · antidepressant response · multimodal neuroimaging</p></div>
+
+  <div class="ct-section"><h2>Name history</h2><div class="name-hist"><div class="name-hist-row"><span class="name-hist-date">2026-04-19</span><span class="name-hist-name">임상 뇌 연결 네트워크 분석</span></div></div></div>
+
+  <div class="ct-section"><h2>Events</h2><div class="event-row"><span class="event-date">2026-04-19</span><span class="event-type born">born</span><span class="event-body">seeded with 3 paper(s)</span></div></div>
+
+  <div class="ct-section"><h2>Members · 3</h2>
+    <div class="members"><div class="member"><span class="member-date">2026-04-19</span><span class="member-title"><a href="../Neuroimaging%20and%20Brain%20Mapping/2026%20-%20Royer%20et%20al.%20-%20Opportunities%20and%20pitfalls%20of%20data%20contextualization%20in%20neuroimaging.pdf">Opportunities and pitfalls of data contextualization in neuroimaging</a></span></div><div class="member"><span class="member-date">2026-04-19</span><span class="member-title"><a href="../Neuroimaging%20and%20Brain%20Mapping/2026%20-%20Zalesky%2C%20Cash%20-%20Null%20models%20for%20lesion%20network%20mapping.pdf">Null models for lesion network mapping</a></span></div><div class="member"><span class="member-date">2026-04-19</span><span class="member-title"><a href="../Neuroimaging%20and%20Brain%20Mapping/2026%20-%20Zheng%20et%20al.%20-%20Beyond%20depression%20symptoms%3B%20the%20default%20mode%20network%20as%20a%20predictor%20of%20antidepressant%20response.pdf">Beyond depression symptoms; the default mode network as a predictor of antidepressant response</a></span></div></div>
+  </div>
+</div></body></html>

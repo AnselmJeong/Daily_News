@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Brief · Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4efe6;
+    --paper-2:#ebe5d8;
+    --ink:#1a1613;
+    --ink-2:#3a332d;
+    --mute:#7a7065;
+    --rule:#d9d1c1;
+    --card:#fbf7ee;
+    --accent:#9c2a1a;
+    --accent-3:#b5821f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"IBM Plex Sans KR","Newsreader",-apple-system,BlinkMacSystemFont,sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(rgba(0,0,0,0.018) 1px, transparent 1px);
+    background-size:3px 3px;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:36px 40px 80px}
+
+  /* MASTHEAD */
+  .mast{
+    border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    padding:14px 0 10px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  }
+  .mast-left{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .mast-title{
+    font-family:"Newsreader",serif;
+    font-weight:700;font-size:42px;line-height:1;letter-spacing:-0.02em;font-style:italic;
+  }
+  .mast-sub{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+  }
+  .mast-right{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:0.08em;color:var(--mute);text-transform:uppercase;text-align:right;
+  }
+  .mast-right b{color:var(--ink);font-weight:500}
+
+  .strap{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 0 24px;
+    border-bottom:1px solid var(--rule);
+    margin-bottom:40px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);
+  }
+  .strap .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* PAGE TITLE */
+  .title-row{
+    display:grid;grid-template-columns:1fr auto;align-items:end;gap:24px;
+    border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:36px;
+  }
+  .page-h{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:68px;line-height:0.95;letter-spacing:-0.025em;margin:0;
+  }
+  .page-h em{font-style:italic;color:var(--accent)}
+  .page-sub{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);
+    text-align:right;
+  }
+  .page-sub b{color:var(--ink);font-weight:500;font-size:13px;display:block;margin-top:4px}
+
+  /* LATEST FEATURE */
+  .latest{
+    display:grid;grid-template-columns:180px 1fr auto;gap:32px;align-items:start;
+    padding:32px 0;
+    border-top:1px solid var(--ink);
+    border-bottom:1px solid var(--ink);
+    margin-bottom:48px;
+    background:var(--card);
+    padding:32px 36px;
+    transition:transform .2s, box-shadow .2s;
+    cursor:pointer;
+  }
+  .latest:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px -16px rgba(26,22,19,0.4);
+  }
+  .latest-date{
+    display:flex;flex-direction:column;gap:2px;
+    border-right:1px solid var(--rule);
+    padding-right:24px;
+  }
+  .latest-date .y{
+    font-family:"JetBrains Mono",monospace;
+    font-size:11px;letter-spacing:0.18em;color:var(--mute);
+  }
+  .latest-date .d{
+    font-family:"Newsreader",serif;
+    font-weight:600;font-size:84px;line-height:0.9;letter-spacing:-0.03em;
+    font-feature-settings:"tnum";
+  }
+  .latest-date .m{
+    font-family:"Newsreader",serif;
+    font-style:italic;font-size:22px;color:var(--accent);margin-top:4px;
+  }
+  .latest-body .kicker{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);
+    font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:10px;
+  }
+  .latest-body .kicker::after{content:"";flex:1;height:1px;background:var(--accent);opacity:.3}
+  .latest-headline{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:36px;line-height:1.05;letter-spacing:-0.015em;margin:0 0 12px;
+    text-wrap:pretty;
+  }
+  .latest-headline em{font-style:italic}
+  .latest-lede{
+    font-family:"Newsreader",serif;
+    font-size:16px;line-height:1.5;color:var(--ink-2);margin:0 0 16px;max-width:58ch;
+  }
+  .latest-stats{
+    display:flex;gap:24px;margin-top:14px;
+    padding-top:14px;border-top:1px solid var(--rule);
+  }
+  .mini-stat{display:flex;flex-direction:column;gap:2px}
+  .mini-stat b{
+    font-family:"Newsreader",serif;
+    font-size:22px;font-weight:600;line-height:1;font-feature-settings:"tnum";
+  }
+  .mini-stat span{
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+  }
+  .latest-cta{
+    align-self:center;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    padding:18px 22px;
+    border:1px solid var(--ink);
+    background:var(--paper);
+    transition:background .2s,color .2s;
+    min-width:140px;
+  }
+  .latest:hover .latest-cta{background:var(--ink);color:var(--paper)}
+  .latest-cta .arr{
+    font-family:"Newsreader",serif;
+    font-style:italic;font-size:44px;line-height:1;
+  }
+  .latest-cta span{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:0.18em;text-transform:uppercase;
+  }
+
+  /* SECTION HEAD */
+  .sec-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:40px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink);
+  }
+  .sec-h{
+    font-family:"Newsreader",serif;
+    font-weight:600;font-size:26px;letter-spacing:-0.015em;margin:0;
+  }
+  .sec-meta{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);
+  }
+
+  /* ARCHIVE LIST */
+  .archive{
+    display:flex;flex-direction:column;
+    border-top:1px solid var(--rule);
+  }
+  .issue{
+    display:grid;
+    grid-template-columns:100px 120px 1fr auto;
+    gap:28px;
+    align-items:baseline;
+    padding:20px 16px;
+    border-bottom:1px solid var(--rule);
+    transition:background .15s;
+    cursor:pointer;
+  }
+  .issue:hover{background:var(--card)}
+  .issue.future{cursor:default;opacity:0.55}
+  .issue.future:hover{background:transparent}
+  .iss-no{
+    font-family:"Newsreader",serif;
+    font-style:italic;font-size:20px;color:var(--mute);
+    font-feature-settings:"tnum";
+  }
+  .iss-date{
+    font-family:"Newsreader",serif;
+    font-weight:500;font-size:22px;letter-spacing:-0.01em;
+    font-feature-settings:"tnum";
+  }
+  .iss-date small{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--mute);
+    font-weight:400;margin-top:3px;
+  }
+  .iss-title{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.35;color:var(--ink-2);
+    text-wrap:pretty;
+  }
+  .iss-title b{color:var(--ink);font-weight:500}
+  .iss-meta{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.08em;color:var(--mute);white-space:nowrap;
+    text-align:right;
+  }
+  .iss-meta b{color:var(--ink);font-weight:500}
+  .issue:hover .iss-arr{color:var(--accent)}
+  .iss-arr{
+    font-family:"Newsreader",serif;
+    font-style:italic;font-size:22px;color:var(--mute);transition:transform .2s,color .2s;
+  }
+  .issue:hover .iss-arr{transform:translateX(4px)}
+
+  .skeleton-date{color:var(--mute);font-weight:400}
+  .skeleton-line{
+    height:10px;background:var(--paper-2);border-radius:2px;
+    width:65%;
+  }
+
+  /* ABOUT STRIP */
+  .about{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+    background:var(--rule);border:1px solid var(--rule);margin-top:56px;
+  }
+  .about-cell{
+    background:var(--paper);padding:22px 24px;
+  }
+  .about-cell .h{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mute);
+    margin-bottom:8px;
+  }
+  .about-cell .t{
+    font-family:"Newsreader",serif;
+    font-size:18px;line-height:1.35;color:var(--ink-2);text-wrap:pretty;
+  }
+  .about-cell .t b{color:var(--ink);font-weight:500}
+
+  footer{
+    margin-top:64px;padding-top:20px;border-top:3px double var(--ink);
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  }
+
+  @media (max-width:860px){
+    .wrap{padding:20px 18px 60px}
+    .page-h{font-size:44px}
+    .title-row{grid-template-columns:1fr;gap:12px}
+    .page-sub{text-align:left}
+    .latest{grid-template-columns:1fr;gap:20px;padding:24px}
+    .latest-date{border-right:none;border-bottom:1px solid var(--rule);padding:0 0 16px}
+    .latest-date .d{font-size:64px}
+    .latest-headline{font-size:26px}
+    .latest-cta{align-self:flex-start;flex-direction:row}
+    .latest-cta .arr{font-size:22px}
+    .issue{grid-template-columns:60px 1fr auto;gap:14px}
+    .iss-no{font-size:14px}
+    .iss-date{font-size:18px}
+    .iss-title{font-size:15px;grid-column:1 / -1}
+    .about{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <div class="mast">
+    <div class="mast-left">
+      <div class="mast-title">Daily Brief</div>
+      <div class="mast-sub">Neuroscience · 매일의 논문 요약</div>
+    </div>
+    <div class="mast-right">
+      Archive · All issues<br>
+      <b>Updated daily · 11:11 KST</b>
+    </div>
+  </div>
+
+  <div class="strap">
+    <span><span class="dot"></span>Live feed · Rollup of daily digests</span>
+    <span>1 issue published · More on the way</span>
+  </div>
+
+  <!-- PAGE TITLE -->
+  <div class="title-row">
+    <h1 class="page-h">The <em>Archive</em></h1>
+    <div class="page-sub">
+      Daily digests of new arrivals in<br>
+      computational, clinical &amp; molecular neuroscience.<br>
+      <b>Click any issue to read →</b>
+    </div>
+  </div>
+
+  <!-- LATEST FEATURED ISSUE -->
+  <div class="sec-head">
+    <h2 class="sec-h">Latest Issue</h2>
+    <div class="sec-meta">Most recent digest</div>
+  </div>
+
+  <a class="latest" href="daily-2026-04-19.html" role="link">
+    <div class="latest-date">
+      <div class="y">2026 · Apr</div>
+      <div class="d">19</div>
+      <div class="m">Sunday</div>
+    </div>
+    <div class="latest-body">
+      <div class="kicker">Today's Through-line</div>
+      <h3 class="latest-headline">몸이 마음을 <em>예측</em>한다</h3>
+      <p class="latest-lede">
+        26편 중 절반 가까이가 한 질문을 공유한다 — 내부 신체 신호(interoception)와
+        베이지안 예측이 어떻게 자기감, 사회 인지, 정신·신경 질환의 병태생리를 형성하는가.
+        Interoceptive Inference가 오늘의 지배 주제로 떠올랐다.
+      </p>
+      <div class="latest-stats">
+        <div class="mini-stat"><b>26</b><span>articles</span></div>
+        <div class="mini-stat"><b>8</b><span>categories</span></div>
+        <div class="mini-stat"><b>4</b><span>themes</span></div>
+        <div class="mini-stat"><b>12</b><span>papers 2026</span></div>
+      </div>
+    </div>
+    <div class="latest-cta">
+      <span>Read issue</span>
+      <span class="arr">→</span>
+    </div>
+  </a>
+
+  <!-- ALL ISSUES -->
+  <div class="sec-head">
+    <h2 class="sec-h">All Issues</h2>
+    <div class="sec-meta">Chronological · Newest first</div>
+  </div>
+
+  <div class="archive">
+
+    <a class="issue" href="daily-2026-04-19.html">
+      <div class="iss-no">Vol. 2026 · № 001</div>
+      <div class="iss-date">04 · 19
+        <small>Sun · Apr 19</small>
+      </div>
+      <div class="iss-title">
+        <b>Interoceptive inference takes center stage.</b>
+        Complement-driven immunometabolic regulation, ASD prediction deficits, and corticostriatal DBS share the page.
+      </div>
+      <div class="iss-meta">
+        <b>26</b> articles · <b>8</b> cats<br>
+        <span class="iss-arr">→</span>
+      </div>
+    </a>
+
+    <!-- Skeleton future issues to hint at the cadence -->
+    <div class="issue future" aria-hidden="true">
+      <div class="iss-no">Vol. 2026 · № 002</div>
+      <div class="iss-date skeleton-date">04 · 20
+        <small>Mon · Apr 20</small>
+      </div>
+      <div class="iss-title">
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="iss-meta">forthcoming</div>
+    </div>
+
+    <div class="issue future" aria-hidden="true">
+      <div class="iss-no">Vol. 2026 · № 003</div>
+      <div class="iss-date skeleton-date">04 · 21
+        <small>Tue · Apr 21</small>
+      </div>
+      <div class="iss-title">
+        <div class="skeleton-line" style="width:48%"></div>
+      </div>
+      <div class="iss-meta">forthcoming</div>
+    </div>
+
+  </div>
+
+  <!-- ABOUT STRIP -->
+  <div class="about">
+    <div class="about-cell">
+      <div class="h">What is this</div>
+      <div class="t">
+        <b>Daily Brief</b>는 매일 새로 수집된 신경과학 논문들의 요약과 공통 주제를
+        정리한 아카이브입니다. 각 호는 어제까지의 14일을 baseline으로 공통·급부상 주제를 감지합니다.
+      </div>
+    </div>
+    <div class="about-cell">
+      <div class="h">Cadence</div>
+      <div class="t">
+        매일 오전 <b>11:11 KST</b>에 업데이트. 당일 새로 들어온 PDF 기반으로
+        자동 생성되며, 카테고리·주제·요약은 모두 알고리즘적으로 구성됩니다.
+      </div>
+    </div>
+    <div class="about-cell">
+      <div class="h">How to read</div>
+      <div class="t">
+        각 호는 <b>Through-line</b>으로 시작해 <b>Theme Pulse</b>와
+        카테고리별 논문 카드를 제공합니다. 제목을 클릭하면 PDF 원문으로 이동합니다.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Daily Brief · Neuroscience Edition</span>
+    <span>daily_news.py · Window: today · Baseline: 14 days</span>
+    <span>Generated 2026-04-19 11:11 KST</span>
+  </footer>
+
+</div>
+</body>
+</html>

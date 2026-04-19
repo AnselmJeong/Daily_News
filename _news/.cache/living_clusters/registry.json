@@ -1,0 +1,363 @@
+{
+  "Neurodevelopment and Aging": [
+    {
+      "uid": "neurodevelopment-and-aging-0003",
+      "status": "active",
+      "size": 11,
+      "theme_name": "자폐 스펙트럼, 생애 전반의 평가와 공존 질환",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurodevelopment-and-aging-0001",
+      "status": "active",
+      "size": 8,
+      "theme_name": "노화 메커니즘과 생체 지표",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurodevelopment-and-aging-0002",
+      "status": "active",
+      "size": 3,
+      "theme_name": "초기 신경발달에 대한 위험요인과 개입",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurodevelopment-and-aging-0004",
+      "status": "active",
+      "size": 2,
+      "theme_name": "뇌 네트워크 노화와 수명 전반 기능적 계층",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Cognitive and Computational Neuroscience": [
+    {
+      "uid": "cognitive-and-computational-neuroscience-0002",
+      "status": "active",
+      "size": 18,
+      "theme_name": "자각·실재 경계의 신경 정보처리机制",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "cognitive-and-computational-neuroscience-0001",
+      "status": "active",
+      "size": 5,
+      "theme_name": "고급 인지 기능 뇌 네트워크",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroethics and Philosophy of Neuroscience": [],
+  "Neural Circuits and Connectivity": [
+    {
+      "uid": "neural-circuits-and-connectivity-0001",
+      "status": "active",
+      "size": 10,
+      "theme_name": "신경 회로의 동적 정보 처리와 행동 통합",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neural-circuits-and-connectivity-0002",
+      "status": "active",
+      "size": 4,
+      "theme_name": "흥분‑억제 균형과 신경 진동",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neurogenetics and Epigenetics": [
+    {
+      "uid": "neurogenetics-and-epigenetics-0001",
+      "status": "active",
+      "size": 7,
+      "theme_name": "유전·후성 유전체와 신경 발달 장애",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Clinical Psychiatry": [
+    {
+      "uid": "clinical-psychiatry-0002",
+      "status": "active",
+      "size": 9,
+      "theme_name": "Clinical Psychiatry",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "clinical-psychiatry-0001",
+      "status": "active",
+      "size": 3,
+      "theme_name": "인지장애 분류와 정밀 정신의학",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Medicine Other than Psychiatry": [
+    {
+      "uid": "medicine-other-than-psychiatry-0001",
+      "status": "active",
+      "size": 3,
+      "theme_name": "노인 근육량 감소와 대사 변화",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroimaging and Brain Mapping": [
+    {
+      "uid": "neuroimaging-and-brain-mapping-0002",
+      "status": "active",
+      "size": 3,
+      "theme_name": "휴식 상태 뇌의 동적 기능 연결성 패턴",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroimaging-and-brain-mapping-0003",
+      "status": "active",
+      "size": 3,
+      "theme_name": "임상 뇌 연결 네트워크 분석",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroimaging-and-brain-mapping-0001",
+      "status": "active",
+      "size": 2,
+      "theme_name": "정신 장애 간 공통 자발적 뇌 활동 이상",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroinflammation and Neurodegeneration": [
+    {
+      "uid": "neuroinflammation-and-neurodegeneration-0001",
+      "status": "active",
+      "size": 7,
+      "theme_name": "뇌-면역 상호작용과 신경 질환",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroinflammation-and-neurodegeneration-0002",
+      "status": "active",
+      "size": 4,
+      "theme_name": "인플라마징과 노화 관련 질환",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neurobiology of Stress and Resilience": [],
+  "Artificial Intelligence, Large Language Models": [
+    {
+      "uid": "artificial-intelligence-large-language-models-0001",
+      "status": "active",
+      "size": 21,
+      "theme_name": "LLM의 의학적 안전성 및 심리적 위험",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "artificial-intelligence-large-language-models-0002",
+      "status": "active",
+      "size": 4,
+      "theme_name": "AI가掀起하는 수학 연구 및 교육의 패러다임 전환",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Molecular, Cellular Biology": [
+    {
+      "uid": "molecular-cellular-biology-0002",
+      "status": "active",
+      "size": 7,
+      "theme_name": "미토콘드리아 대사와 노화·면역 조절",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "molecular-cellular-biology-0001",
+      "status": "active",
+      "size": 5,
+      "theme_name": "인간 microbiome의 전파·식이·대사체 통합 연구",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuropharmacology and Drug Mechanisms": [
+    {
+      "uid": "neuropharmacology-and-drug-mechanisms-0001",
+      "status": "active",
+      "size": 12,
+      "theme_name": "사이키델릭·카나비노이드 기반 정신건강 치료",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuropharmacology-and-drug-mechanisms-0002",
+      "status": "active",
+      "size": 6,
+      "theme_name": "케타민 기반 급성 항우울제의 다면적 신경생리학적 기전",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Complexity, Chaos, Network Science": [],
+  "Neuropsychology of Emotion and Motivation": [
+    {
+      "uid": "neuropsychology-of-emotion-and-motivation-0002",
+      "status": "active",
+      "size": 5,
+      "theme_name": "자기 인식과 정신병리의 신경과학",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuropsychology-of-emotion-and-motivation-0001",
+      "status": "active",
+      "size": 4,
+      "theme_name": "정동·동기 기반 환경 행동",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Artificial Intelligence in Neuroscience": [
+    {
+      "uid": "artificial-intelligence-in-neuroscience-0001",
+      "status": "active",
+      "size": 10,
+      "theme_name": "AI 기반 의료·연구 혁신",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "artificial-intelligence-in-neuroscience-0002",
+      "status": "active",
+      "size": 2,
+      "theme_name": "파운데이션 모델 기반 뇌 기능 모델링",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neurodegeneration and Neuroinflammation": [
+    {
+      "uid": "neurodegeneration-and-neuroinflammation-0001",
+      "status": "active",
+      "size": 17,
+      "theme_name": "노인성 치매의 병태생리와 치료 전략",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurodegeneration-and-neuroinflammation-0002",
+      "status": "active",
+      "size": 8,
+      "theme_name": "아밀로이드-타우 병리와 신경회로 손상",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Sleep and Circadian Rhythms": [
+    {
+      "uid": "sleep-and-circadian-rhythms-0001",
+      "status": "active",
+      "size": 2,
+      "theme_name": "수면-면역-대사 교차로에서의 전신 항상성",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Psychotherapy and Mental Health Interventions": [],
+  "Emerging Technologies in Neuromodulation": [
+    {
+      "uid": "emerging-technologies-in-neuromodulation-0001",
+      "status": "active",
+      "size": 12,
+      "theme_name": "비침습적 뇌자극의 신경回路 변조와 정신질환 적용",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "emerging-technologies-in-neuromodulation-0002",
+      "status": "active",
+      "size": 3,
+      "theme_name": "초음파 뇌 자극과 신경보형 기술",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neurological Disorders and Epilepsy": [],
+  "Statistics, Data Science": [
+    {
+      "uid": "statistics-data-science-0001",
+      "status": "active",
+      "size": 3,
+      "theme_name": "사회·행동과학 연구 신뢰성·재현성 평가",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "statistics-data-science-0002",
+      "status": "active",
+      "size": 2,
+      "theme_name": "고급 통계 추론 기법",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroscience of Social Behavior": [
+    {
+      "uid": "neuroscience-of-social-behavior-0001",
+      "status": "active",
+      "size": 6,
+      "theme_name": "사회적 연결과 협동 행동의 심리·신경학적 영향",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroscience-of-social-behavior-0003",
+      "status": "active",
+      "size": 5,
+      "theme_name": "옥시토신과 사회 행동의 신경 기제",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroscience-of-social-behavior-0002",
+      "status": "active",
+      "size": 3,
+      "theme_name": "사회 신뢰와 네트워크 불평등의 상호작용",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neurobiology of Psychiatric Disorders": [
+    {
+      "uid": "neurobiology-of-psychiatric-disorders-0001",
+      "status": "active",
+      "size": 18,
+      "theme_name": "자폐·조현병·양극성 우울 장애의 신경생물학적 공통점",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurobiology-of-psychiatric-disorders-0002",
+      "status": "active",
+      "size": 4,
+      "theme_name": "우울증 병태생리학의 통합적 다면 관점",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neurobiology-of-psychiatric-disorders-0003",
+      "status": "active",
+      "size": 3,
+      "theme_name": "미생물-장-뇌 축과 우울·섭식 변화",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroscience of Learning and Memory": [
+    {
+      "uid": "neuroscience-of-learning-and-memory-0001",
+      "status": "active",
+      "size": 3,
+      "theme_name": "학습과 기억을 조절하는 신경가소성 메커니즘",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroscience-of-learning-and-memory-0002",
+      "status": "active",
+      "size": 2,
+      "theme_name": "기억 회상 시 신경 진동 및 뇌 상태의 역할",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroscience of Addiction and Reward": [
+    {
+      "uid": "neuroscience-of-addiction-and-reward-0001",
+      "status": "active",
+      "size": 5,
+      "theme_name": "물질사용장애의 신경회로 및 도파민 기전",
+      "updated_at": "2026-04-19T21:18:23"
+    },
+    {
+      "uid": "neuroscience-of-addiction-and-reward-0002",
+      "status": "active",
+      "size": 5,
+      "theme_name": "Cannabis가 기억·뇌 기능에 미치는 영향",
+      "updated_at": "2026-04-19T21:18:23"
+    }
+  ],
+  "Neuroscience of Pain and Sensory Processing": [],
+  "Free Energy Principle, Active Inference": [],
+  "Cosmology and Physics": [],
+  "Network of Belief": [],
+  "Cognitive Modeling of Paranoia": [],
+  "Philosophy and Ethics of Science": []
+}
