@@ -152,6 +152,7 @@ class Cluster:
     name_before: str = ""       # prior theme_name, if renamed
     revived: bool = False       # true if a dormant LC was revived today
     rename_reason: str = ""     # drift | growth | drift+growth
+    growth_rate_7d: float = 0.0 # fraction of LC members added in last 7 days
 
     @property
     def n_today(self) -> int:
@@ -1248,6 +1249,7 @@ def save_theme_snapshot(target_date: date, clusters: list[Cluster]) -> None:
                 "name_before": c.name_before,
                 "rename_reason": c.rename_reason,
                 "revived": c.revived,
+                "growth_rate_7d": round(float(c.growth_rate_7d), 4),
                 "centroid": [round(float(x), 5) for x in c.centroid.tolist()],
                 "members_today": [e.fname for e in c.members_today],
             }
@@ -1392,6 +1394,7 @@ text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:600}
 .cluster-badge.ext{background:var(--ink);color:var(--paper)}
 .cluster-badge.ren{background:var(--accent-3);color:var(--paper)}
 .cluster-badge.rev{background:#4a7a3c;color:var(--paper)}
+.cluster-badge.rising{background:#c7521a;color:var(--paper)}
 .cluster-badge{position:static;display:inline-block;vertical-align:middle}
 .cluster-head .cluster-badge:first-of-type{position:absolute;top:10px;right:12px}
 .cluster-sparkline{display:flex;align-items:flex-end;gap:2px;height:22px;
@@ -1401,6 +1404,8 @@ opacity:0.25;min-height:2px;border-radius:1px}
 .cluster-sparkline span.has{opacity:0.85;background:var(--accent)}
 .evo-item.evo-ren{border-left:3px solid var(--accent-3)}
 .evo-item.evo-rev{border-left:3px solid #4a7a3c}
+.evo-item.evo-rising{border-left:3px solid #c7521a}
+.evo-item.evo-split{border-left:3px solid #7a3c7a}
 .evo-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px}
 .evo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
 background:var(--card);border:1px solid var(--rule);border-radius:4px;
@@ -1666,11 +1671,14 @@ def render_daily_html(
         )
     for c in sorted(extended_clusters, key=lambda c: -c.n_today):
         cluster_total = c.prior_member_count + c.n_added_today
+        growth_bit = (f' · 🔥 최근 7일 {int(round(c.growth_rate_7d * 100))}%'
+                      if c.growth_rate_7d >= 0.3 else '')
         evo_items_html += (
             f'<div class="evo-item evo-ext">'
             f'<span class="evo-kind">Extended</span>'
             f'{_uid_link(c)}'
-            f'<span class="evo-meta">+{c.n_added_today} → 총 {cluster_total}편</span>'
+            f'<span class="evo-meta">+{c.n_added_today} → 총 {cluster_total}편'
+            f'{growth_bit}</span>'
             f'</div>'
         )
     for c in renamed_clusters:
@@ -1691,11 +1699,57 @@ def render_daily_html(
             f'</div>'
         )
 
+    # Rising — top clusters where ≥30% of mass arrived in the last 7 days,
+    # excluding ones already surfaced above as Born/Extended.
+    surfaced_uids = {c.living_uid for c in born_clusters + extended_clusters if c.living_uid}
+    rising_clusters = sorted(
+        [c for c in all_clusters
+         if c.growth_rate_7d >= 0.3 and c.living_uid
+         and c.living_uid not in surfaced_uids],
+        key=lambda c: -c.growth_rate_7d,
+    )[:5]
+    for c in rising_clusters:
+        evo_items_html += (
+            f'<div class="evo-item evo-rising">'
+            f'<span class="evo-kind">Rising</span>'
+            f'{_uid_link(c)}'
+            f'<span class="evo-meta">🔥 최근 7일 '
+            f'{int(round(c.growth_rate_7d * 100))}%</span>'
+            f'</div>'
+        )
+
+    # Split events dated today — structural changes in LC registry.
+    split_events_today = []
+    target_iso = target_date.isoformat()
+    for lcs in (living_by_cat or {}).values():
+        for lc in lcs:
+            for ev in lc.events:
+                if ev.get("type") == "split" and str(ev.get("at", ""))[:10] == target_iso:
+                    split_events_today.append((lc, ev))
+    for lc, ev in split_events_today:
+        into = ev.get("into") or []
+        child_uid = next((u for u in into if u != lc.uid), "")
+        link_parent = (f'<a class="evo-name" href="cluster-{esc(lc.uid)}.html">'
+                       f'{esc(lc.theme_name or lc.uid)}</a>')
+        link_child = (f'<a class="evo-name" href="cluster-{esc(child_uid)}.html">'
+                      f'{esc(child_uid)}</a>') if child_uid else ""
+        evo_items_html += (
+            f'<div class="evo-item evo-split">'
+            f'<span class="evo-kind">Split</span>'
+            f'{link_parent}'
+            f'<span class="evo-meta">✂️ {ev.get("kept", "?")} + {ev.get("spawned", "?")}편'
+            + (f' → {link_child}' if link_child else '')
+            + f' · silhouette={ev.get("silhouette", 0):.2f}</span>'
+            f'</div>'
+        )
+
     evo_meta_bits = []
     if born_clusters: evo_meta_bits.append(f"Born {len(born_clusters)}")
     if extended_clusters: evo_meta_bits.append(f"Extended {len(extended_clusters)}")
     if renamed_clusters: evo_meta_bits.append(f"Renamed {len(renamed_clusters)}")
     if revived_clusters: evo_meta_bits.append(f"Revived {len(revived_clusters)}")
+    if rising_clusters: evo_meta_bits.append(f"Rising {len(rising_clusters)}")
+    if split_events_today: evo_meta_bits.append(f"Split {len(split_events_today)}")
     evo_block_html = (
         '<div class="sec-head">'
         '<h2 class="sec-h">Cluster Evolution</h2>'
@@ -1807,6 +1861,11 @@ def render_daily_html(
                 badge_bits.append('<span class="cluster-badge ren">RENAMED</span>')
             if c.revived:
                 badge_bits.append('<span class="cluster-badge rev">REVIVED</span>')
+            if (c.growth_rate_7d >= 0.3 and c.lineage != "born"):
+                pct = int(round(c.growth_rate_7d * 100))
+                badge_bits.append(
+                    f'<span class="cluster-badge rising">🔥 {pct}% · 7d</span>'
+                )
             badge = "".join(badge_bits)
             spark_html = _sparkline_for(c, target_date) if c.living_uid else ""
             # Suppress the cluster-level concept overview when the cluster
@@ -2151,6 +2210,8 @@ border:1px solid var(--rule);border-radius:3px;min-width:80px;text-align:center}
 .event-type.extended{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .event-type.renamed{background:var(--accent-3);color:var(--paper);border-color:var(--accent-3)}
 .event-type.revived{background:#4a7a3c;color:var(--paper);border-color:#4a7a3c}
+.event-type.split{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
+.event-type.split_from{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
 .event-body{flex:1;font-size:13.5px;color:var(--ink-2)}
 .members{display:flex;flex-direction:column;gap:1px;background:var(--rule);
 border:1px solid var(--rule)}
@@ -2322,6 +2383,15 @@ def _describe_event(ev: dict) -> str:
         return f'merged with {esc(ev.get("other", ""))}'
     if t == "merged_into":
         return f'merged into {esc(ev.get("into", ""))}'
+    if t == "split":
+        into = ev.get("into") or []
+        return (f'split into {len(into)} (kept {ev.get("kept", "?")} + '
+                f'spawned {ev.get("spawned", "?")}, '
+                f'silhouette={ev.get("silhouette", 0):.2f})')
+    if t == "split_from":
+        return (f'spawned from {esc(ev.get("parent", ""))} '
+                f'(size {ev.get("size", "?")}, '
+                f'silhouette={ev.get("silhouette", 0):.2f})')
     if t == "revived":
         return f'revived after dormancy'
     if t == "dormant":
@@ -2686,6 +2756,19 @@ def run(
                 break
     save_living_clusters(list(touched_by_uid.values()), living_by_cat)
 
+    # Stamp each daily cluster with its LC's current 7-day growth rate so
+    # renderers can surface rising themes without recomputing from members.
+    from . import living_cluster as lcmod
+    living_index: dict[str, "lcmod.LivingCluster"] = {}
+    for lcs in living_by_cat.values():
+        for lc in lcs:
+            living_index[lc.uid] = lc
+    for c in all_clusters_flat:
+        if c.living_uid and c.living_uid in living_index:
+            c.growth_rate_7d = lcmod.growth_rate_7d(
+                living_index[c.living_uid], ref_date=target_date,
+            )
+
     # Persist any newly generated per-paper TLDRs to the abstracts cache
     # so future runs don't re-call the LLM.
     persist_tldrs(today)
@@ -2732,6 +2815,9 @@ def run_consolidate(dry_run: bool = False) -> None:
     touched: set[str] = set()
     merges = 0
     dormant_marked = 0
+    splits = 0
+
+    emb_cache = load_embeddings_cache()
 
     for cat, lcs in by_cat.items():
         # Only merge within category. Compare active clusters pairwise.
@@ -2767,6 +2853,87 @@ def run_consolidate(dry_run: bool = False) -> None:
             except Exception:
                 pass
 
+        # Split sweep — try to cleave clusters whose members bifurcate cleanly.
+        # Skip anything already merged-away in this pass.
+        try:
+            from sklearn.cluster import KMeans  # type: ignore
+            from sklearn.metrics import silhouette_score  # type: ignore
+            import numpy as np
+        except Exception:
+            KMeans = None  # type: ignore
+            silhouette_score = None  # type: ignore
+
+        if KMeans is not None and silhouette_score is not None:
+            # Iterate over a snapshot since we may append to `lcs` below.
+            for lc in list(lcs):
+                if lc.status != "active":
+                    continue
+                if lc.uid in absorbed:
+                    continue
+                if lc.size < 2 * lcmod.SPLIT_MIN_SIZE:
+                    continue
+                embs = []
+                missing = 0
+                for m in lc.members:
+                    fn = m.get("fname")
+                    v = emb_cache.get(fn) if fn else None
+                    if v is None:
+                        missing += 1
+                        break
+                    embs.append(np.asarray(v, dtype=np.float32))
+                if missing or len(embs) < 2 * lcmod.SPLIT_MIN_SIZE:
+                    continue
+                X = np.stack(embs)
+                try:
+                    km = KMeans(n_clusters=2, n_init=10, random_state=0).fit(X)
+                    labels = km.labels_.tolist()
+                    if len(set(labels)) < 2:
+                        continue
+                    sil = float(silhouette_score(X, labels, metric="cosine"))
+                except Exception as e:
+                    log.debug("split kmeans failed for %s: %s", lc.uid, e)
+                    continue
+
+                n0 = sum(1 for l in labels if l == 0)
+                n1 = len(labels) - n0
+                decision = {
+                    "at": today_iso,
+                    "kind": "split_check",
+                    "category": cat,
+                    "uid": lc.uid,
+                    "silhouette": round(sil, 4),
+                    "sizes": [n0, n1],
+                    "threshold": lcmod.SPLIT_SILHOUETTE,
+                    "min_size": lcmod.SPLIT_MIN_SIZE,
+                }
+                if (sil >= lcmod.SPLIT_SILHOUETTE
+                        and min(n0, n1) >= lcmod.SPLIT_MIN_SIZE):
+                    decision["outcome"] = "split"
+                    if not dry_run:
+                        child = lcmod.split_cluster(
+                            original=lc,
+                            existing=lcs,
+                            assignments=labels,
+                            member_embeddings=embs,
+                            today_iso=today_iso,
+                            silhouette=sil,
+                        )
+                        if child is not None:
+                            lcs.append(child)
+                            touched.add(lc.uid)
+                            touched.add(child.uid)
+                            splits += 1
+                            log.info("split %s → %s + %s (sil=%.2f, %d/%d)",
+                                     lc.uid, lc.uid, child.uid, sil, n0, n1)
+                        else:
+                            decision["outcome"] = "split_aborted"
+                else:
+                    decision["outcome"] = "keep"
+                try:
+                    _append_jsonl(DECISIONS_LOG_PATH, decision)
+                except Exception:
+                    pass
+
         # Dormancy sweep
         for lc in lcs:
             if lc.status != "active":
@@ -2790,11 +2957,11 @@ def run_consolidate(dry_run: bool = False) -> None:
                 if lc.uid in touched:
                     lcs_to_save.append(lc)
         save_living_clusters(lcs_to_save, by_cat)
-        log.info("consolidate: %d merged · %d dormant · %d files updated",
-                 merges, dormant_marked, len(lcs_to_save))
+        log.info("consolidate: %d merged · %d split · %d dormant · %d files updated",
+                 merges, splits, dormant_marked, len(lcs_to_save))
     else:
-        log.info("consolidate: merges=%d dormant=%d (dry_run=%s)",
-                 merges, dormant_marked, dry_run)
+        log.info("consolidate: merges=%d splits=%d dormant=%d (dry_run=%s)",
+                 merges, splits, dormant_marked, dry_run)
 
 
 def _log_run(rec: dict) -> None:

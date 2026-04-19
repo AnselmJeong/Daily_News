@@ -38,6 +38,8 @@ BORN_MIN_SIZE = 2        # HDBSCAN cluster must have ≥ N today members to "be 
 DELTA_DRIFT = 0.15       # cos distance; exceed → re-name candidate
 NAME_GROWTH_RATIO = 1.5  # members grew ×N since last naming → re-name candidate
 DORMANCY_DAYS = 30       # no new members for N days → dormant
+SPLIT_MIN_SIZE = 3       # a sub-cluster must hold ≥ N members to qualify for split
+SPLIT_SILHOUETTE = 0.5   # silhouette score threshold for 2-way split decision
 
 
 # ---------------------------------------------------------------------------
@@ -501,6 +503,105 @@ def last_activity_date(lc: LivingCluster) -> Optional[date]:
             if best is None or d > best:
                 best = d
     return best
+
+
+def growth_rate_7d(lc: LivingCluster, ref_date: Optional[date] = None) -> float:
+    """Fraction of members added in the 7 days ending at `ref_date` (inclusive).
+
+    Returns 0.0 when the cluster has no members. Clamped to [0, 1]. This is
+    the "rising theme" signal from organic_cluster.md §3F — high values mean
+    a lot of the cluster's mass was picked up very recently.
+    """
+    ref = ref_date or date.today()
+    total = len(lc.members)
+    if total <= 0:
+        return 0.0
+    cutoff = ref.toordinal() - 6  # 7-day window inclusive of ref
+    recent = 0
+    for m in lc.members:
+        try:
+            d = date.fromisoformat(str(m.get("added", ""))[:10])
+        except Exception:
+            continue
+        if d.toordinal() >= cutoff and d <= ref:
+            recent += 1
+    return max(0.0, min(1.0, recent / total))
+
+
+def split_cluster(
+    original: LivingCluster,
+    existing: list[LivingCluster],
+    assignments: list[int],                # per-member 0/1 labels aligned with original.members
+    member_embeddings: list,               # aligned embeddings (np-like vectors)
+    today_iso: str,
+    silhouette: float,
+) -> Optional[LivingCluster]:
+    """Cleave `original` into two clusters along `assignments` (0=keep, 1=spawn).
+
+    Recomputes both centroids from the assigned embeddings, mutates `original`
+    in place to retain only label-0 members, and returns a newly allocated
+    LivingCluster holding label-1 members. Both sides emit a `split` event.
+
+    Returns None when the split would leave either side below SPLIT_MIN_SIZE.
+    """
+    import numpy as np
+    if len(assignments) != len(original.members):
+        return None
+    keep_idx = [i for i, a in enumerate(assignments) if a == 0]
+    spawn_idx = [i for i, a in enumerate(assignments) if a == 1]
+    if len(keep_idx) < SPLIT_MIN_SIZE or len(spawn_idx) < SPLIT_MIN_SIZE:
+        return None
+
+    keep_members = [original.members[i] for i in keep_idx]
+    spawn_members = [original.members[i] for i in spawn_idx]
+    keep_embs = np.stack([np.asarray(member_embeddings[i], dtype=np.float32)
+                          for i in keep_idx])
+    spawn_embs = np.stack([np.asarray(member_embeddings[i], dtype=np.float32)
+                           for i in spawn_idx])
+    keep_centroid = [float(x) for x in keep_embs.mean(axis=0).tolist()]
+    spawn_centroid = [float(x) for x in spawn_embs.mean(axis=0).tolist()]
+
+    now = datetime.now().isoformat(timespec="seconds")
+    spawn_uid = next_uid(original.category, existing)
+    child = LivingCluster(
+        uid=spawn_uid,
+        category=original.category,
+        created_at=now,
+        updated_at=now,
+        status="active",
+        theme_name=original.theme_name,     # inherit; drift-rename will refresh
+        theme_summary=original.theme_summary,
+        keywords=list(original.keywords),
+        centroid=spawn_centroid,
+        centroid_at_last_name=spawn_centroid,
+        members=spawn_members,
+        name_history=([{"at": today_iso, "name": original.theme_name,
+                        "reason": "split_from", "parent": original.uid}]
+                      if original.theme_name else []),
+        events=[{
+            "at": today_iso,
+            "type": "split_from",
+            "parent": original.uid,
+            "size": len(spawn_members),
+            "silhouette": round(float(silhouette), 4),
+        }],
+    )
+
+    original.members = keep_members
+    original.centroid = keep_centroid
+    # Treat the retained side's naming baseline as "now" — the cluster's
+    # character has shifted enough that drift should be measured afresh.
+    original.centroid_at_last_name = list(keep_centroid)
+    original.updated_at = now
+    original.events.append({
+        "at": today_iso,
+        "type": "split",
+        "into": [original.uid, spawn_uid],
+        "kept": len(keep_members),
+        "spawned": len(spawn_members),
+        "silhouette": round(float(silhouette), 4),
+    })
+    return child
 
 
 def create_born(
