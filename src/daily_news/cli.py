@@ -57,12 +57,14 @@ RUN_LOG_PATH: Path = Path()
 DAILY_SUMMARIES_PATH: Path = Path()
 LIVING_CLUSTERS_DIR: Path = Path()
 DECISIONS_LOG_PATH: Path = Path()
+ORPHAN_POOL_DIR: Path = Path()
 
 
 def configure_paths(articles_root: Path) -> None:
     global ARTICLES_ROOT, NEWS_DIR, CACHE_DIR, INDEX_JSON
     global ABSTRACTS_PATH, EMBEDDINGS_PATH, THEMES_HISTORY_PATH, RUN_LOG_PATH
     global DAILY_SUMMARIES_PATH, LIVING_CLUSTERS_DIR, DECISIONS_LOG_PATH
+    global ORPHAN_POOL_DIR
     ARTICLES_ROOT = articles_root.resolve()
     NEWS_DIR = ARTICLES_ROOT / "_news"
     CACHE_DIR = NEWS_DIR / ".cache"
@@ -75,6 +77,7 @@ def configure_paths(articles_root: Path) -> None:
     DAILY_SUMMARIES_PATH = CACHE_DIR / "daily_summaries.jsonl"
     LIVING_CLUSTERS_DIR = CACHE_DIR / "living_clusters"
     DECISIONS_LOG_PATH = CACHE_DIR / "cluster_decisions.jsonl"
+    ORPHAN_POOL_DIR = CACHE_DIR / "orphan_pool"
 
 
 def resolve_articles_root(cli_arg: Optional[str]) -> Path:
@@ -730,6 +733,66 @@ def hybrid_cluster_category(
     return result
 
 
+def backfill_orphan_pool(
+    category: str,
+    living: list,        # list[LivingCluster]
+    pool: list,          # list[OrphanRecord]
+    emb_cache: dict,     # {fname: np.ndarray}
+    today_iso: str,
+) -> tuple[list, list[str]]:
+    """Re-evaluate each orphan in `pool` against the given living clusters.
+
+    For every orphan whose embedding cosine-sim against the best-matching
+    active LC is ≥ τ_join, mutate that LC in-place via
+    :func:`living_cluster.absorb_backfill` (original `first_seen` date is
+    preserved on the new member). Returns ``(touched_lcs, absorbed_fnames)``.
+
+    The caller is responsible for (a) saving the touched LCs and (b) removing
+    `absorbed_fnames` from the pool before persisting it.
+    """
+    from . import living_cluster as lcmod
+
+    if not pool or not living:
+        return [], []
+
+    by_lc: dict[str, list[tuple[str, "np.ndarray", str]]] = {}
+    absorbed_fnames: list[str] = []
+
+    for rec in pool:
+        emb = emb_cache.get(rec.fname)
+        if emb is None:
+            continue
+        best, sim = lcmod.best_match(emb, living, include_dormant=False)
+        if best is None or sim < lcmod.TAU_JOIN:
+            continue
+        by_lc.setdefault(best.uid, []).append((rec.fname, emb, rec.first_seen))
+        absorbed_fnames.append(rec.fname)
+        if DECISIONS_LOG_PATH and str(DECISIONS_LOG_PATH) not in ("", "."):
+            try:
+                _append_jsonl(DECISIONS_LOG_PATH, {
+                    "kind": "backfill",
+                    "fname": rec.fname,
+                    "category": category,
+                    "best_uid": best.uid,
+                    "best_sim": round(sim, 4),
+                    "original_date": rec.first_seen,
+                    "at": datetime.now().isoformat(timespec="seconds"),
+                })
+            except Exception:
+                pass
+
+    touched: list = []
+    living_by_uid = {lc.uid: lc for lc in living}
+    for uid, triples in by_lc.items():
+        lc = living_by_uid.get(uid)
+        if lc is None:
+            continue
+        lcmod.absorb_backfill(lc, triples, today_iso=today_iso)
+        touched.append(lc)
+
+    return touched, absorbed_fnames
+
+
 def apply_living_updates(
     clusters: list[Cluster],
     living_by_cat: dict[str, list],   # dict[str, list[LivingCluster]]
@@ -1350,14 +1413,6 @@ margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
 letter-spacing:-0.015em;margin:0}
 .sec-meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;
 letter-spacing:0.15em;text-transform:uppercase;color:var(--mute)}
-.catnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
-.catnav a{text-decoration:none;display:inline-flex;align-items:center;gap:8px;
-padding:7px 13px 7px 11px;background:var(--card);border:1px solid var(--rule);
-border-radius:999px;font-size:12.5px;font-weight:500;color:var(--ink);transition:all .15s}
-.catnav a:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
-.catnav a .n{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--mute);
-background:var(--paper-2);padding:1px 6px;border-radius:999px}
-.catnav a:hover .n{background:rgba(244,239,230,0.2);color:var(--paper)}
 .cat-section{margin-top:56px;scroll-margin-top:20px}
 .cat-header{display:grid;grid-template-columns:auto 1fr auto;align-items:end;
 gap:20px;padding-bottom:12px;border-bottom:1px solid var(--ink);margin-bottom:24px}
@@ -1461,6 +1516,35 @@ display:flex;align-items:center;gap:6px}
 .paper-read .arr{transition:transform .2s}
 .paper:hover .paper-read .arr{transform:translateX(4px)}
 .papers.single{grid-template-columns:1fr}
+.cluster-count{display:inline-flex;align-items:baseline;gap:6px;margin-top:6px;
+font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mute);
+letter-spacing:0.05em}
+.cluster-count b{font-family:"Newsreader",serif;font-size:18px;font-weight:500;
+color:var(--ink);font-feature-settings:"tnum"}
+.cluster-count .added{color:var(--accent);font-weight:600}
+.cluster-preview{display:grid;grid-template-columns:1fr;gap:1px;
+background:var(--rule);border:1px solid var(--rule);margin-top:10px}
+.cluster-preview .rep{background:var(--card);padding:10px 14px;
+text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px;
+transition:background .15s}
+.cluster-preview .rep:hover{background:var(--paper-2)}
+.rep-title{font-family:"Newsreader",serif;font-weight:500;font-size:14.5px;
+line-height:1.3;color:var(--ink);text-wrap:pretty}
+.rep-authors{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--mute);letter-spacing:0.04em}
+.cluster-foot{margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule);
+font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+display:flex;align-items:center;gap:6px}
+.cluster-foot a{color:var(--accent);text-decoration:none}
+.cluster-foot a:hover{text-decoration:underline}
+.orphan-badge{display:inline-flex;align-items:center;gap:6px;
+font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.1em;text-transform:uppercase;
+background:var(--card);border:1px solid var(--rule);
+padding:4px 10px;border-radius:999px;color:var(--ink-2);
+text-decoration:none;white-space:nowrap;margin-left:10px}
+.orphan-badge:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
 footer{margin-top:80px;padding-top:20px;border-top:3px double var(--ink);
 font-family:"JetBrains Mono",monospace;font-size:10.5px;
 letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
@@ -1559,14 +1643,73 @@ def _paper_tags_html(e: "Entry", keywords: list[str], keywords_are_fallback: boo
     return f'<div class="paper-tags">{"".join(tags)}</div>' if tags else ""
 
 
+def _top_representative_papers(
+    c: "Cluster",
+    lc,
+    emb_cache: dict,
+    k: int = 3,
+) -> list[tuple[str, str, str]]:
+    """Return up to k (title, authors, href) tuples for the cluster's most
+    centroid-representative papers. If centroid/emb lookups fail, fall back to
+    newest members_today by filename order.
+
+    `lc` may be the living-cluster (preferred: uses its full member list) or
+    None (fresh/unmatched cluster → pick from members_today).
+    """
+    from . import living_cluster as lcmod
+    picks: list[tuple[float, str, str, str]] = []  # (sim, fname, title, authors)
+    centroid = None
+    if c.centroid is not None:
+        centroid = c.centroid
+    elif lc is not None and getattr(lc, "centroid", None):
+        try:
+            import numpy as np
+            centroid = np.asarray(lc.centroid, dtype="float32")
+        except Exception:
+            centroid = None
+
+    if lc is not None and getattr(lc, "members", None):
+        for m in lc.members:
+            fn = m.get("fname", "")
+            if not fn:
+                continue
+            v = emb_cache.get(fn) if emb_cache else None
+            sim = lcmod.cosine_sim(centroid, v) if (centroid is not None and v is not None) else 0.0
+            authors, title = parse_authors_title(fn)
+            picks.append((sim, fn, title or fn, authors))
+    else:
+        for e in c.members_today:
+            sim = (lcmod.cosine_sim(centroid, e.embedding)
+                   if (centroid is not None and e.embedding is not None) else 0.0)
+            picks.append((sim, e.fname, e.title or e.fname, e.authors))
+
+    if any(p[0] > 0 for p in picks):
+        picks.sort(key=lambda p: -p[0])
+    ranked = picks[:k]
+    out: list[tuple[str, str, str]] = []
+    for _, fn, title, authors in ranked:
+        href = f"../{urllib.parse.quote(c.category)}/{urllib.parse.quote(fn)}"
+        out.append((title, authors, href))
+    return out
+
+
+def _orphan_pool_href(cat: str) -> str:
+    from . import orphan_pool as orphmod
+    return f"orphans-{orphmod._slug(cat)}.html"
+
+
 def render_daily_html(
     target_date: date,
     today: list[Entry],
     clusters_by_cat: dict[str, list[Cluster]],
     use_llm: bool = True,
     living_by_cat: Optional[dict] = None,
+    emb_cache: Optional[dict] = None,
+    orphan_counts_by_cat: Optional[dict[str, int]] = None,
 ) -> Path:
     living_by_cat = living_by_cat or {}
+    emb_cache = emb_cache or {}
+    orphan_counts_by_cat = orphan_counts_by_cat or {}
     living_by_uid: dict[str, object] = {}
     for lcs in living_by_cat.values():
         for lc in lcs:
@@ -1758,17 +1901,6 @@ def render_daily_html(
         f'<div class="evo-list">{evo_items_html}</div>'
     ) if evo_items_html else ""
 
-    # Category nav
-    catnav_html = '<nav class="catnav">'
-    for cat in cats_sorted:
-        cnt = sum(cl.n_today for cl in clusters_by_cat[cat])
-        if cnt:
-            catnav_html += (
-                f'<a href="#cat-{esc(anchor_of(cat))}">'
-                f'{esc(cat)} <span class="n">{cnt}</span></a>'
-            )
-    catnav_html += '</nav>'
-
     # Sparkline helper — weekly member counts over the last 10 weeks
     def _sparkline_for(c: Cluster, ref_date: date, n_weeks: int = 10) -> str:
         if not c.living_uid:
@@ -1826,31 +1958,28 @@ def render_daily_html(
         subtitle = " · ".join(dict.fromkeys(all_kw[:4]))
 
         cluster_cards: list[str] = []
-        singleton_papers: list[str] = []
         for c in cl_list:
             if c.n_today == 0:
                 continue
-            is_bare_singleton = (c.n_today == 1 and not c.members_recent
-                                 and c.lineage not in ("extended", "born")
-                                 and not c.living_uid)
+            # "Orphan" = a today-paper that did not join/spawn a living cluster
+            # (extended/born). Matches the criterion in run()'s orphan-pool
+            # touch step, so the `🗂 N unclustered` badge count stays consistent
+            # with what actually goes to orphans-<slug>.html.
+            is_bare_singleton = (c.n_today == 1
+                                 and c.lineage not in ("extended", "born"))
             if is_bare_singleton:
-                e = c.members_today[0]
-                # Use the paper's own tldr (or cleaned fallback), never the
-                # cluster summary (which for 1-paper LCs is not meaningful).
-                paper_summary = e.tldr or _clean_abstract_snippet(e.abstract)
-                singleton_papers.append(
-                    paper_card(e, paper_summary, c.keywords, c.keywords_are_fallback)
-                )
+                # Unclustered singletons are rolled up into the category's
+                # orphan-index page via the badge below — no inline render.
                 continue
 
-            cluster_papers = "".join(
-                paper_card(
-                    e,
-                    e.tldr or _clean_abstract_snippet(e.abstract),
-                    c.keywords,
-                    c.keywords_are_fallback,
-                )
-                for e in c.members_today[:6]
+            lc = living_by_uid.get(c.living_uid) if c.living_uid else None
+            reps = _top_representative_papers(c, lc, emb_cache, k=3)
+            cluster_preview = "".join(
+                f'<a class="rep" href="{esc(href)}">'
+                f'<span class="rep-title">{esc(title)}</span>'
+                + (f'<span class="rep-authors">{esc(authors)}</span>' if authors else '') +
+                f'</a>'
+                for (title, authors, href) in reps
             )
             badge_bits = []
             if c.lineage == "born":
@@ -1873,24 +2002,45 @@ def render_daily_html(
             # across, so the "summary" would just duplicate that paper.
             total_size = c.n_today + c.n_recent
             show_summary = bool(c.theme_summary) and total_size >= 2
+            cluster_uid_link = (f'cluster-{esc(c.living_uid)}.html'
+                                if c.living_uid else f'#cat-{esc(anchor)}')
+            added_bit = (f' <span class="added">+{c.n_added_today} this week</span>'
+                         if c.n_added_today > 0 else "")
+            count_html = (
+                f'<a class="cluster-count" href="{cluster_uid_link}">'
+                f'📄 <b>{total_size}</b> papers{added_bit}'
+                f'</a>'
+            )
+            foot_html = (
+                f'<div class="cluster-foot">'
+                f'<a href="{cluster_uid_link}">View all members →</a>'
+                f'</div>'
+            ) if c.living_uid else ""
             cluster_cards.append(
                 '<div class="cluster-group">'
                 '<div class="cluster-head">'
                 + badge +
-                f'<span class="cluster-label">cluster · {c.n_today}편</span>'
+                f'<span class="cluster-label">cluster</span>'
                 f'<span class="cluster-name">{esc(c.theme_name or "")}</span>'
                 + (f'<p class="cluster-summary">{esc(c.theme_summary)}</p>' if show_summary else '') +
+                count_html +
                 spark_html +
                 '</div>'
-                f'<div class="papers">{cluster_papers}</div>'
+                + (f'<div class="cluster-preview">{cluster_preview}</div>' if cluster_preview else '') +
+                foot_html +
                 '</div>'
             )
+
+        orphan_n = int(orphan_counts_by_cat.get(cat, 0))
+        orphan_badge_html = (
+            f'<a class="orphan-badge" href="{esc(_orphan_pool_href(cat))}" '
+            f'title="Unclustered papers awaiting future grouping">'
+            f'🗂 {orphan_n} unclustered</a>'
+        ) if orphan_n > 0 else ""
 
         cat_body = ""
         if cluster_cards:
             cat_body += '<div class="clusters-grid">' + "".join(cluster_cards) + '</div>'
-        if singleton_papers:
-            cat_body += '<div class="papers">' + "".join(singleton_papers) + '</div>'
 
         sections_html += (
             f'<section class="cat-section" id="cat-{esc(anchor)}">'
@@ -1899,7 +2049,7 @@ def render_daily_html(
             f'<div><h3 class="cat-title">{esc(cat)}'
             + (f'<small>{esc(subtitle)}</small>' if subtitle else '') +
             f'</h3></div>'
-            f'<div class="cat-pill">{n} paper{"s" if n != 1 else ""}</div>'
+            f'<div><span class="cat-pill">{n} paper{"s" if n != 1 else ""}</span>{orphan_badge_html}</div>'
             f'</div>'
             f'{cat_body}'
             f'</section>'
@@ -1996,8 +2146,6 @@ def render_daily_html(
     <h2 class="sec-h">Today's Reading</h2>
     <div class="sec-meta">{len(cats_sorted)} categories · {total} articles</div>
   </div>
-
-  {catnav_html}
 
   {sections_html}
 
@@ -2207,20 +2355,40 @@ color:var(--mute);min-width:100px}
 letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;
 border:1px solid var(--rule);border-radius:3px;min-width:80px;text-align:center}
 .event-type.born{background:var(--accent);color:var(--paper);border-color:var(--accent)}
-.event-type.extended{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.event-type.extended,.event-type.backfill{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .event-type.renamed{background:var(--accent-3);color:var(--paper);border-color:var(--accent-3)}
 .event-type.revived{background:#4a7a3c;color:var(--paper);border-color:#4a7a3c}
 .event-type.split{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
 .event-type.split_from{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
 .event-body{flex:1;font-size:13.5px;color:var(--ink-2)}
-.members{display:flex;flex-direction:column;gap:1px;background:var(--rule);
-border:1px solid var(--rule)}
-.member{background:var(--card);padding:10px 14px;display:flex;gap:12px;
-align-items:baseline;font-size:13.5px}
-.member-date{font-family:"JetBrains Mono",monospace;font-size:10.5px;
-color:var(--mute);min-width:90px}
-.member-title{flex:1}
-.member-title a{text-decoration:none}
+.members-weekly{display:flex;flex-direction:column;gap:14px}
+.week-group{border:1px solid var(--rule);background:var(--card);
+border-radius:3px;overflow:hidden}
+.week-group[open]>.week-header{border-bottom:1px solid var(--rule)}
+.week-header{list-style:none;cursor:pointer;padding:10px 14px;
+display:flex;align-items:baseline;gap:10px;font-family:"JetBrains Mono",monospace;
+font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2)}
+.week-header::-webkit-details-marker{display:none}
+.week-header::marker{display:none}
+.week-header::before{content:"▸";font-size:10px;color:var(--mute);
+transition:transform .15s ease}
+.week-group[open]>.week-header::before{transform:rotate(90deg);display:inline-block}
+.week-emoji{font-size:13px}
+.week-label{color:var(--ink)}
+.week-count{margin-left:auto;color:var(--mute);font-size:11px}
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:1px;background:var(--rule)}
+.paper-card{background:var(--paper);padding:14px 16px;display:flex;
+flex-direction:column;gap:6px;min-height:92px}
+.paper-title{font-family:"Newsreader",serif;font-weight:500;font-size:16px;
+line-height:1.35;margin:0}
+.paper-title a{text-decoration:none;color:var(--ink)}
+.paper-title a:hover{color:var(--accent);text-decoration:underline}
+.paper-authors{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+color:var(--mute);letter-spacing:0.04em}
+.paper-snippet{margin:4px 0 0;font-size:13px;color:var(--ink-2);
+line-height:1.45}
+.ct-empty{color:var(--mute);font-family:"JetBrains Mono",monospace;font-size:11px}
 .spark-big{display:flex;align-items:flex-end;gap:3px;height:60px;
 background:var(--card);padding:10px;border:1px solid var(--rule)}
 .spark-big span{display:block;flex:1;background:var(--ink-2);
@@ -2230,23 +2398,237 @@ opacity:0.2;border-radius:2px;min-height:3px}
 .spark-label{font-family:"JetBrains Mono",monospace;font-size:9.5px;
 letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
 margin-top:6px;display:flex;justify-content:space-between}
+.bc-list{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+font-family:"JetBrains Mono",monospace;font-size:11px}
+.bc-link{padding:4px 10px;border:1px solid var(--rule);
+background:var(--card);color:var(--ink);text-decoration:none;border-radius:3px;
+letter-spacing:0.05em}
+.bc-link:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bc-missing{color:var(--mute);border-style:dashed;cursor:default}
+.bc-missing:hover{background:var(--card);color:var(--mute);border-color:var(--rule)}
+.bc-more{color:var(--mute);font-size:10px;letter-spacing:0.1em;text-transform:uppercase}
 """
 
 
-def render_cluster_detail_pages(living_by_cat: dict) -> list[Path]:
-    """One HTML page per living cluster. Written to NEWS_DIR/cluster-<uid>.html."""
+def render_orphan_index_pages() -> list[Path]:
+    """Write monthly orphan pages + a per-category index.
+
+    Output:
+      - NEWS_DIR/orphans-<slug>-YYYY-MM.html  (one per (category, month) pair)
+      - NEWS_DIR/orphans-<slug>.html          (month picker for the category)
+    """
+    from . import orphan_pool as orphmod
+
+    pools = orphmod.load_all_pools(ORPHAN_POOL_DIR)
+    if not pools:
+        return []
+    abstracts_cache = load_abstracts_cache() or {}
     written: list[Path] = []
-    for cat, lcs in living_by_cat.items():
-        for lc in lcs:
-            path = _render_single_cluster_page(lc)
-            if path is not None:
-                written.append(path)
+    today = date.today()
+
+    for cat, records in pools.items():
+        if not records:
+            continue
+        slug = orphmod._slug(cat)
+        by_month = orphmod.group_by_month(records)
+        # Render each monthly page.
+        month_keys = sorted(by_month.keys(), reverse=True)
+        for mk in month_keys:
+            recs = by_month[mk]
+            page_path = _render_orphan_month_page(cat, slug, mk, recs, abstracts_cache, today)
+            written.append(page_path)
+        # Index page
+        idx_path = _render_orphan_category_index(cat, slug, by_month, month_keys)
+        written.append(idx_path)
+
     if written:
-        log.info("rendered %d cluster detail pages", len(written))
+        log.info("rendered %d orphan pages", len(written))
     return written
 
 
-def _render_single_cluster_page(lc) -> Optional[Path]:
+def _orphan_ttl_weeks() -> int:
+    from . import orphan_pool as orphmod
+    return orphmod.ORPHAN_TTL_WEEKS
+
+
+def _render_orphan_month_page(
+    cat: str, slug: str, month_key: str,
+    records: list, abstracts_cache: dict, today: date,
+) -> Path:
+    # Group by monday-anchored week, newest week open by default.
+    week_groups: dict[str, list] = {}
+    for r in records:
+        try:
+            d = date.fromisoformat(r.first_seen[:10])
+        except Exception:
+            continue
+        monday = d - timedelta(days=d.weekday())
+        week_groups.setdefault(monday.isoformat(), []).append(r)
+    sorted_weeks = sorted(week_groups.keys(), reverse=True)
+
+    week_html_parts: list[str] = []
+    for i, wk_key in enumerate(sorted_weeks):
+        recs = sorted(week_groups[wk_key], key=lambda r: r.first_seen, reverse=True)
+        open_attr = " open" if i < 2 else ""
+        cards = ""
+        for r in recs:
+            authors, title = parse_authors_title(r.fname)
+            href = f"../{urllib.parse.quote(r.category)}/{urllib.parse.quote(r.fname)}"
+            snippet = ""
+            info = abstracts_cache.get(r.fname) or {}
+            snippet = _abstract_snippet(info.get("abstract", "") or "", max_chars=220)
+            meta_bits = [
+                f'first seen {esc(r.first_seen)}',
+                f'{r.attempts} attempt{"s" if r.attempts != 1 else ""}',
+            ]
+            card_bits = [
+                f'<h4 class="paper-title"><a href="{esc(href)}">{esc(title or r.fname)}</a></h4>'
+            ]
+            if authors:
+                card_bits.append(f'<div class="paper-authors">{esc(authors)}</div>')
+            if snippet:
+                card_bits.append(f'<p class="paper-snippet">{esc(snippet)}</p>')
+            card_bits.append(
+                f'<div class="paper-meta">{" · ".join(meta_bits)}</div>'
+            )
+            cards += f'<article class="paper-card">{"".join(card_bits)}</article>'
+        week_html_parts.append(
+            f'<details class="week-group"{open_attr}>'
+            f'<summary class="week-header">'
+            f'<span class="week-emoji">📅</span>'
+            f'<span class="week-label">Week of {esc(wk_key)}</span>'
+            f'<span class="week-count">{len(recs)} orphan{"s" if len(recs) != 1 else ""}</span>'
+            f'</summary>'
+            f'<div class="paper-grid">{cards}</div>'
+            f'</details>'
+        )
+    weeks_html = "".join(week_html_parts) or "<p class=\"ct-empty\">—</p>"
+
+    doc = f"""<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orphans · {esc(cat)} · {esc(month_key)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700&family=IBM+Plex+Sans+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>{CLUSTER_PAGE_CSS}
+.paper-meta{{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--mute);letter-spacing:0.04em;margin-top:4px}}</style>
+</head><body><div class="wrap">
+  <div class="mast">
+    <div class="mast-title">Orphans</div>
+    <a class="back" href="orphans-{esc(slug)}.html">← {esc(cat)} index</a>
+  </div>
+  <h1 class="ct">{esc(cat)} · {esc(month_key)}</h1>
+  <div class="ct-meta">
+    Unclustered papers · {len(records)} paper{"s" if len(records) != 1 else ""}
+    · pool TTL {_orphan_ttl_weeks()} weeks
+  </div>
+  <p class="ct-summary">이 페이지의 논문들은 아직 어떤 cluster에도 속하지 못한 상태입니다.
+  다음 주 실행에서 기존 cluster로 재흡수되거나 새 cluster로 승격될 수 있습니다.</p>
+  <div class="ct-section"><h2>Members by week</h2>
+    <div class="members-weekly">{weeks_html}</div>
+  </div>
+</div></body></html>
+"""
+    out = NEWS_DIR / f"orphans-{slug}-{month_key}.html"
+    out.write_text(doc, encoding="utf-8")
+    return out
+
+
+def _render_orphan_category_index(
+    cat: str, slug: str,
+    by_month: dict[str, list], month_keys: list[str],
+) -> Path:
+    rows = ""
+    for mk in month_keys:
+        n = len(by_month[mk])
+        rows += (
+            f'<a class="month-row" href="orphans-{esc(slug)}-{esc(mk)}.html">'
+            f'<span class="month-key">{esc(mk)}</span>'
+            f'<span class="month-count">{n} orphan{"s" if n != 1 else ""}</span>'
+            f'<span class="month-arr">→</span>'
+            f'</a>'
+        )
+    if not rows:
+        rows = '<p class="ct-empty">no orphans</p>'
+    total = sum(len(v) for v in by_month.values())
+    doc = f"""<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orphans · {esc(cat)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700&family=IBM+Plex+Sans+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>{CLUSTER_PAGE_CSS}
+.month-row{{display:grid;grid-template-columns:160px 1fr 24px;
+align-items:center;gap:14px;padding:14px 18px;
+background:var(--card);border:1px solid var(--rule);
+text-decoration:none;color:inherit;margin-bottom:6px;
+transition:background .15s}}
+.month-row:hover{{background:var(--paper-2)}}
+.month-key{{font-family:"JetBrains Mono",monospace;font-size:14px;
+letter-spacing:0.1em;color:var(--ink)}}
+.month-count{{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);letter-spacing:0.1em;text-transform:uppercase}}
+.month-arr{{font-family:"Newsreader",serif;font-style:italic;
+font-size:20px;color:var(--mute)}}</style>
+</head><body><div class="wrap">
+  <div class="mast">
+    <div class="mast-title">Orphans</div>
+    <a class="back" href="index.html">← index</a>
+  </div>
+  <h1 class="ct">{esc(cat)}</h1>
+  <div class="ct-meta">Unclustered paper pool · {total} paper{"s" if total != 1 else ""}</div>
+  <p class="ct-summary">이 카테고리에서 아직 cluster에 편입되지 않은 논문들의 월별 보관소입니다.
+  매 주 실행마다 기존 cluster centroid에 재평가되며, 승격된 논문은 사라집니다.</p>
+  <div class="ct-section"><h2>By month</h2>
+    {rows}
+  </div>
+</div></body></html>
+"""
+    out = NEWS_DIR / f"orphans-{slug}.html"
+    out.write_text(doc, encoding="utf-8")
+    return out
+
+
+def render_cluster_detail_pages(
+    living_by_cat: dict, force: bool = False,
+) -> list[Path]:
+    """One HTML page per living cluster. Written to NEWS_DIR/cluster-<uid>.html.
+
+    Skips LCs whose on-disk HTML is newer than ``lc.updated_at`` unless
+    ``force`` is set.
+    """
+    abstracts_cache = load_abstracts_cache()
+    written: list[Path] = []
+    skipped = 0
+    for cat, lcs in living_by_cat.items():
+        for lc in lcs:
+            out_path = NEWS_DIR / f"cluster-{lc.uid}.html"
+            if not force and not _cluster_page_is_stale(lc, out_path):
+                skipped += 1
+                continue
+            path = _render_single_cluster_page(lc, abstracts_cache=abstracts_cache)
+            if path is not None:
+                written.append(path)
+    if written or skipped:
+        log.info("cluster detail pages: %d rendered, %d skipped (up-to-date)",
+                 len(written), skipped)
+    return written
+
+
+def _cluster_page_is_stale(lc, out_path: Path) -> bool:
+    """Return True if the cluster page needs regeneration."""
+    if not out_path.exists():
+        return True
+    try:
+        mtime = datetime.fromtimestamp(out_path.stat().st_mtime)
+        updated = datetime.fromisoformat(lc.updated_at)
+        return updated > mtime
+    except Exception:
+        return True
+
+
+def _render_single_cluster_page(lc, abstracts_cache: Optional[dict] = None) -> Optional[Path]:
     # weekly histogram — last 26 weeks
     n_weeks = 26
     today = date.today()
@@ -2301,18 +2683,79 @@ def _render_single_cluster_page(lc) -> Optional[Path]:
             f'</div>'
         )
 
-    # Members sorted by added date, newest first
-    mem_rows = ""
-    for m in sorted(lc.members, key=lambda m: str(m.get("added", "")), reverse=True):
-        fname = m.get("fname", "")
-        _, title = parse_authors_title(fname)
-        # Best-effort link (members live under the category folder)
-        href = f"../{urllib.parse.quote(lc.category)}/{urllib.parse.quote(fname)}"
-        mem_rows += (
-            f'<div class="member">'
-            f'<span class="member-date">{esc(str(m.get("added", ""))[:10])}</span>'
-            f'<span class="member-title"><a href="{esc(href)}">{esc(title)}</a></span>'
-            f'</div>'
+    # Members grouped by calendar week (Mon-anchored), newest week first. Each
+    # week is collapsible; the two most recent weeks are expanded by default so
+    # the page opens to the active work without burying older cohorts.
+    week_groups: dict[str, list[dict]] = {}
+    for m in lc.members:
+        try:
+            d = date.fromisoformat(str(m.get("added", ""))[:10])
+        except Exception:
+            continue
+        monday = d - timedelta(days=d.weekday())
+        week_groups.setdefault(monday.isoformat(), []).append(m)
+    sorted_weeks = sorted(week_groups.keys(), reverse=True)
+    week_html_parts: list[str] = []
+    for i, wk_key in enumerate(sorted_weeks):
+        members = sorted(
+            week_groups[wk_key],
+            key=lambda m: str(m.get("added", "")),
+            reverse=True,
+        )
+        open_attr = " open" if i < 2 else ""
+        cards = ""
+        for m in members:
+            fname = m.get("fname", "")
+            authors, title = parse_authors_title(fname)
+            href = f"../{urllib.parse.quote(lc.category)}/{urllib.parse.quote(fname)}"
+            snippet = ""
+            if abstracts_cache:
+                info = abstracts_cache.get(fname) or {}
+                snippet = _abstract_snippet(info.get("abstract", "") or "", max_chars=220)
+            card_bits = [
+                f'<h4 class="paper-title"><a href="{esc(href)}">{esc(title or fname)}</a></h4>'
+            ]
+            if authors:
+                card_bits.append(f'<div class="paper-authors">{esc(authors)}</div>')
+            if snippet:
+                card_bits.append(f'<p class="paper-snippet">{esc(snippet)}</p>')
+            cards += f'<article class="paper-card">{"".join(card_bits)}</article>'
+        week_html_parts.append(
+            f'<details class="week-group"{open_attr}>'
+            f'<summary class="week-header">'
+            f'<span class="week-emoji">📅</span>'
+            f'<span class="week-label">Week of {esc(wk_key)}</span>'
+            f'<span class="week-count">added: {len(members)}</span>'
+            f'</summary>'
+            f'<div class="paper-grid">{cards}</div>'
+            f'</details>'
+        )
+    members_html = "".join(week_html_parts) or "<p class=\"ct-empty\">—</p>"
+
+    # Breadcrumb — weekly snapshot pages this cluster appeared in.
+    breadcrumb_dates: set[str] = set()
+    for m in lc.members:
+        d_str = str(m.get("added", ""))[:10]
+        if d_str:
+            breadcrumb_dates.add(d_str)
+    breadcrumb_html = ""
+    if breadcrumb_dates:
+        sorted_dates = sorted(breadcrumb_dates, reverse=True)[:12]
+        links = []
+        for d_str in sorted_dates:
+            daily_path = NEWS_DIR / f"daily-{d_str}.html"
+            if daily_path.exists():
+                links.append(
+                    f'<a class="bc-link" href="daily-{esc(d_str)}.html">{esc(d_str)}</a>'
+                )
+            else:
+                links.append(f'<span class="bc-link bc-missing">{esc(d_str)}</span>')
+        more = (f' <span class="bc-more">+{len(breadcrumb_dates) - len(sorted_dates)} earlier</span>'
+                if len(breadcrumb_dates) > len(sorted_dates) else "")
+        breadcrumb_html = (
+            '<div class="ct-section"><h2>Appeared in weekly issues</h2>'
+            f'<div class="bc-list">{" · ".join(links)}{more}</div>'
+            '</div>'
         )
 
     summary_html = f'<p class="ct-summary">{esc(lc.theme_summary)}</p>' if lc.theme_summary else ""
@@ -2357,8 +2800,10 @@ def _render_single_cluster_page(lc) -> Optional[Path]:
 
   <div class="ct-section"><h2>Events</h2>{ev_rows or '<p>—</p>'}</div>
 
+  {breadcrumb_html}
+
   <div class="ct-section"><h2>Members · {lc.size}</h2>
-    <div class="members">{mem_rows}</div>
+    <div class="members-weekly">{members_html}</div>
   </div>
 </div></body></html>
 """
@@ -2372,7 +2817,7 @@ def _describe_event(ev: dict) -> str:
     if t == "born":
         seeds = ev.get("seed_files") or []
         return f"seeded with {len(seeds)} paper(s)"
-    if t == "extended":
+    if t == "extended" or t == "backfill":
         return (f'+{len(ev.get("added_files") or [])} → '
                 f'{ev.get("n_before", 0)} → {ev.get("n_after", 0)} '
                 f'(drift Δ={ev.get("centroid_shift_cos", 0):.3f})')
@@ -2708,12 +3153,57 @@ def run(
                      sum(len(v) for v in living_by_cat.values()),
                      len(living_by_cat))
 
+    # Orphan pool: re-evaluate previously unclustered papers against active LCs
+    # BEFORE matching today's entries, so that a paper which looked lonely in an
+    # earlier week can now be back-filled into a living cluster. Pool is
+    # organised per category; non-current categories are left untouched until
+    # their next activity.
+    from . import orphan_pool as orphmod
+    emb_cache_all = load_embeddings_cache()
+    today_iso = target_date.isoformat()
+    backfill_touched_by_uid: dict[str, "lcmod.LivingCluster"] = {}
+    pool_by_cat: dict[str, list] = {}  # category -> list[OrphanRecord] AFTER this run
+
     clusters_by_cat: dict[str, list[Cluster]] = {}
     for cat, members in _group_by_cat(today).items():
         recent_same_cat = [e for e in recent if e.category == cat]
         living_same_cat = living_by_cat.get(cat, [])
+
+        # (1) Load pool for this category & try back-fill absorption.
+        pool = orphmod.load_pool(ORPHAN_POOL_DIR, cat)
+        if pool:
+            touched, absorbed = backfill_orphan_pool(
+                cat, living_same_cat, pool, emb_cache_all, today_iso,
+            )
+            if absorbed:
+                log.info("backfill: absorbed %d pool orphans into %d LCs (cat=%s)",
+                         len(absorbed), len(touched), cat)
+                pool = orphmod.drop(pool, absorbed)
+            for lc in touched:
+                backfill_touched_by_uid[lc.uid] = lc
+
+        # (2) Hybrid clustering on today's entries (pool entries are not added
+        # to HDBSCAN here — a future phase may extend this to include pool
+        # orphans for co-clustering).
         cs = hybrid_cluster_category(members, recent_same_cat, living_same_cat)
         clusters_by_cat[cat] = cs
+
+        # (3) Identify today's new orphans — today papers that remained
+        # singletons and did not join any living cluster. These join the pool
+        # for re-evaluation next week.
+        today_orphan_fnames: list[str] = []
+        for c in cs:
+            if c.lineage in ("extended", "born"):
+                continue
+            # fresh singleton/noise — treat as orphan
+            if c.n_today == 1:
+                today_orphan_fnames.extend(e.fname for e in c.members_today)
+        if today_orphan_fnames:
+            pool = orphmod.touch(pool, today_orphan_fnames, today_iso, cat)
+
+        # (4) TTL-prune and stash for later persistence.
+        pool = orphmod.prune(pool, target_date)
+        pool_by_cat[cat] = pool
 
     total_clusters = sum(len(v) for v in clusters_by_cat.values())
     log.info("naming %d clusters via Ollama=%s", total_clusters, use_llm)
@@ -2746,8 +3236,10 @@ def run(
     if rename_events:
         log.info("renamed %d living clusters", len(rename_events))
 
-    # Any LC touched by absorb/born OR by rename must be saved
+    # Any LC touched by absorb/born OR by rename OR by backfill must be saved
     touched_by_uid = {lc.uid: lc for lc in touched_lcs}
+    for uid, lc in backfill_touched_by_uid.items():
+        touched_by_uid[uid] = lc
     for ev in rename_events:
         lcs = living_by_cat.get(ev["category"], [])
         for lc in lcs:
@@ -2755,6 +3247,15 @@ def run(
                 touched_by_uid[lc.uid] = lc
                 break
     save_living_clusters(list(touched_by_uid.values()), living_by_cat)
+
+    # Persist the updated orphan pools (one JSONL per category that saw
+    # activity this run). Categories not in `pool_by_cat` keep whatever was
+    # already on disk.
+    for cat, records in pool_by_cat.items():
+        try:
+            orphmod.save_pool(ORPHAN_POOL_DIR, cat, records)
+        except Exception as e:
+            log.warning("orphan_pool save failed (%s): %s", cat, e)
 
     # Stamp each daily cluster with its LC's current 7-day growth rate so
     # renderers can surface rising themes without recomputing from members.
@@ -2774,9 +3275,19 @@ def run(
     persist_tldrs(today)
 
     save_theme_snapshot(target_date, [c for cs in clusters_by_cat.values() for c in cs])
+    # Surface orphan counts. For categories touched today, use the in-memory
+    # post-run state; for the rest, read whatever pool is still on disk.
+    orphan_counts_by_cat = {cat: len(records) for cat, records in pool_by_cat.items()}
+    on_disk = orphmod.load_all_pools(ORPHAN_POOL_DIR)
+    for cat, recs in on_disk.items():
+        if cat not in orphan_counts_by_cat:
+            orphan_counts_by_cat[cat] = len(recs)
     render_daily_html(target_date, today, clusters_by_cat, use_llm=use_llm,
-                      living_by_cat=living_by_cat)
+                      living_by_cat=living_by_cat,
+                      emb_cache=emb_cache_all,
+                      orphan_counts_by_cat=orphan_counts_by_cat)
     render_cluster_detail_pages(living_by_cat)
+    render_orphan_index_pages()
     render_rollup_index()
 
     elapsed = time.time() - t0
@@ -2964,6 +3475,60 @@ def run_consolidate(dry_run: bool = False) -> None:
                  merges, splits, dormant_marked, dry_run)
 
 
+def run_weekly_range(start_date: date, end_date: date, use_llm: bool) -> None:
+    """Produce one weekly snapshot per 7-day window starting at ``start_date``.
+
+    For ``start=2026-04-01`` the pages are dated 04-07 (covering 04-01..04-07),
+    04-14 (04-08..04-14), 04-21, ... up to the last complete or partial week
+    that ends on or before ``end_date``.
+    """
+    if start_date > end_date:
+        log.warning("run_weekly_range: start (%s) after end (%s) — nothing to do",
+                    start_date, end_date)
+        return
+    windows: list[tuple[date, date]] = []
+    week_start = start_date
+    while week_start <= end_date:
+        week_end = min(week_start + timedelta(days=6), end_date)
+        windows.append((week_start, week_end))
+        week_start = week_end + timedelta(days=1)
+
+    log.info("weekly range: %d windows from %s to %s",
+             len(windows), start_date, end_date)
+    for i, (ws, we) in enumerate(windows, 1):
+        log.info("─── weekly window %d/%d: %s..%s ───", i, len(windows), ws, we)
+        run(target_date=we, since_hours=None, use_llm=use_llm, from_date=ws)
+
+
+def run_rebuild_clusters(force: bool = False, dry_run: bool = False) -> None:
+    """Load every living cluster and rewrite its detail page. Also refreshes
+    the per-category orphan index pages so the weekly snapshot's badges point
+    somewhere valid."""
+    from . import living_cluster as lcmod
+
+    by_cat = lcmod.load_all_clusters(LIVING_CLUSTERS_DIR)
+    total = sum(len(v) for v in by_cat.values())
+    if not total:
+        log.info("rebuild-clusters: no living clusters on disk")
+        return
+
+    if dry_run:
+        stale = 0
+        for lcs in by_cat.values():
+            for lc in lcs:
+                out = NEWS_DIR / f"cluster-{lc.uid}.html"
+                if force or _cluster_page_is_stale(lc, out):
+                    stale += 1
+        log.info("rebuild-clusters (dry-run): %d/%d stale (force=%s)",
+                 stale, total, force)
+        return
+
+    written = render_cluster_detail_pages(by_cat, force=force)
+    orphan_pages = render_orphan_index_pages()
+    log.info("rebuild-clusters: %d cluster pages, %d orphan pages",
+             len(written), len(orphan_pages))
+
+
 def _log_run(rec: dict) -> None:
     rec["ts"] = datetime.now().isoformat(timespec="seconds")
     with RUN_LOG_PATH.open("a") as f:
@@ -3034,8 +3599,14 @@ def main() -> None:
     ap.add_argument("--consolidate", action="store_true",
                     help="Housekeeping pass: merge near-duplicate clusters and "
                          "mark stale ones dormant. Skips the daily run.")
+    ap.add_argument("--rebuild-clusters", action="store_true",
+                    help="Regenerate every cluster-<uid>.html from the current "
+                         "living cluster registry. Skips the daily run.")
+    ap.add_argument("--force-rebuild", action="store_true",
+                    help="With --rebuild-clusters: bypass the dirty-check and "
+                         "rewrite every cluster page regardless of mtime.")
     ap.add_argument("--dry-run", action="store_true",
-                    help="With --consolidate: only log decisions, don't mutate.")
+                    help="With --consolidate or --rebuild-clusters: log only.")
     ap.add_argument("--verbose", "-v", action="store_true")
     args = ap.parse_args()
     ensure_logger(args.verbose)
@@ -3047,12 +3618,29 @@ def main() -> None:
         run_consolidate(dry_run=args.dry_run)
         return
 
+    if args.rebuild_clusters:
+        run_rebuild_clusters(force=args.force_rebuild, dry_run=args.dry_run)
+        return
+
     if args.from_date and args.since_hours is not None:
         ap.error("--from/--to cannot be combined with --since-hours")
     if args.to_date and not args.from_date:
         ap.error("--to requires --from")
     if args.from_date and args.date:
         ap.error("--from/--to cannot be combined with --date; use --to instead")
+
+    # --from without --to → weekly cadence: publish one page per 7-day
+    # window starting at --from, labeled by the window's end date. E.g.
+    # `--from 2026-04-01` → pages at 04-07 (covers 04-01..04-07),
+    # 04-14 (covers 04-08..04-14), 04-21, ... up to today.
+    if args.from_date and not args.to_date and not args.date:
+        start = datetime.strptime(args.from_date, "%Y-%m-%d").date()
+        today_d = date.today()
+        if start > today_d:
+            ap.error("--from is in the future")
+        run_weekly_range(start_date=start, end_date=today_d,
+                         use_llm=not args.no_llm)
+        return
 
     if args.from_date:
         target = datetime.strptime(args.to_date, "%Y-%m-%d").date() if args.to_date else date.today()

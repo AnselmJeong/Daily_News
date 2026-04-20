@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orphans · Cognitive and Computational Neuroscience · 2026-04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700&family=IBM+Plex+Sans+KR:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4efe6;--paper-2:#ebe5d8;--ink:#1a1613;--ink-2:#3a332d;
+--mute:#7a7065;--rule:#d9d1c1;--card:#fbf7ee;--accent:#9c2a1a;--accent-3:#b5821f}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);
+font-family:"IBM Plex Sans KR","Newsreader",sans-serif;font-size:15px;line-height:1.55}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:36px 40px 80px}
+.mast{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink);
+padding:14px 0 10px;display:flex;align-items:baseline;justify-content:space-between}
+.mast-title{font-family:"Newsreader",serif;font-weight:700;font-size:32px;font-style:italic}
+.back{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.1em;text-transform:uppercase;color:var(--mute)}
+h1.ct{font-family:"Newsreader",serif;font-weight:500;font-size:44px;
+margin:28px 0 8px;letter-spacing:-0.02em}
+.ct-meta{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px}
+.ct-summary{font-size:16px;color:var(--ink-2);margin-bottom:32px}
+.ct-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+background:var(--rule);border:1px solid var(--rule);margin-bottom:36px}
+.ct-stat{background:var(--card);padding:16px 20px}
+.ct-stat b{display:block;font-family:"Newsreader",serif;font-weight:500;
+font-size:26px}
+.ct-stat span{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute)}
+.ct-section{margin:40px 0}
+.ct-section h2{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.14em;text-transform:uppercase;color:var(--mute);
+border-bottom:1px solid var(--rule);padding-bottom:6px;margin-bottom:14px}
+.name-hist{display:flex;flex-direction:column;gap:4px}
+.name-hist-row{display:flex;gap:12px;align-items:baseline;padding:4px 0}
+.name-hist-date{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);min-width:100px}
+.name-hist-name{font-family:"Newsreader",serif;font-size:16px}
+.name-hist-reason{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--accent-3);margin-left:auto}
+.event-row{display:flex;gap:12px;align-items:baseline;padding:8px 0;
+border-bottom:1px dashed var(--rule)}
+.event-date{font-family:"JetBrains Mono",monospace;font-size:11px;
+color:var(--mute);min-width:100px}
+.event-type{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;
+border:1px solid var(--rule);border-radius:3px;min-width:80px;text-align:center}
+.event-type.born{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.event-type.extended,.event-type.backfill{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.event-type.renamed{background:var(--accent-3);color:var(--paper);border-color:var(--accent-3)}
+.event-type.revived{background:#4a7a3c;color:var(--paper);border-color:#4a7a3c}
+.event-type.split{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
+.event-type.split_from{background:#7a3c7a;color:var(--paper);border-color:#7a3c7a}
+.event-body{flex:1;font-size:13.5px;color:var(--ink-2)}
+.members-weekly{display:flex;flex-direction:column;gap:14px}
+.week-group{border:1px solid var(--rule);background:var(--card);
+border-radius:3px;overflow:hidden}
+.week-group[open]>.week-header{border-bottom:1px solid var(--rule)}
+.week-header{list-style:none;cursor:pointer;padding:10px 14px;
+display:flex;align-items:baseline;gap:10px;font-family:"JetBrains Mono",monospace;
+font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2)}
+.week-header::-webkit-details-marker{display:none}
+.week-header::marker{display:none}
+.week-header::before{content:"▸";font-size:10px;color:var(--mute);
+transition:transform .15s ease}
+.week-group[open]>.week-header::before{transform:rotate(90deg);display:inline-block}
+.week-emoji{font-size:13px}
+.week-label{color:var(--ink)}
+.week-count{margin-left:auto;color:var(--mute);font-size:11px}
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:1px;background:var(--rule)}
+.paper-card{background:var(--paper);padding:14px 16px;display:flex;
+flex-direction:column;gap:6px;min-height:92px}
+.paper-title{font-family:"Newsreader",serif;font-weight:500;font-size:16px;
+line-height:1.35;margin:0}
+.paper-title a{text-decoration:none;color:var(--ink)}
+.paper-title a:hover{color:var(--accent);text-decoration:underline}
+.paper-authors{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+color:var(--mute);letter-spacing:0.04em}
+.paper-snippet{margin:4px 0 0;font-size:13px;color:var(--ink-2);
+line-height:1.45}
+.ct-empty{color:var(--mute);font-family:"JetBrains Mono",monospace;font-size:11px}
+.spark-big{display:flex;align-items:flex-end;gap:3px;height:60px;
+background:var(--card);padding:10px;border:1px solid var(--rule)}
+.spark-big span{display:block;flex:1;background:var(--ink-2);
+opacity:0.2;border-radius:2px;min-height:3px}
+.spark-big span.has{opacity:0.85;background:var(--accent)}
+.spark-big span.future{opacity:0.05}
+.spark-label{font-family:"JetBrains Mono",monospace;font-size:9.5px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+margin-top:6px;display:flex;justify-content:space-between}
+.bc-list{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+font-family:"JetBrains Mono",monospace;font-size:11px}
+.bc-link{padding:4px 10px;border:1px solid var(--rule);
+background:var(--card);color:var(--ink);text-decoration:none;border-radius:3px;
+letter-spacing:0.05em}
+.bc-link:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bc-missing{color:var(--mute);border-style:dashed;cursor:default}
+.bc-missing:hover{background:var(--card);color:var(--mute);border-color:var(--rule)}
+.bc-more{color:var(--mute);font-size:10px;letter-spacing:0.1em;text-transform:uppercase}
+
+.paper-meta{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--mute);letter-spacing:0.04em;margin-top:4px}</style>
+</head><body><div class="wrap">
+  <div class="mast">
+    <div class="mast-title">Orphans</div>
+    <a class="back" href="orphans-cognitive-and-computational-neuroscience.html">← Cognitive and Computational Neuroscience index</a>
+  </div>
+  <h1 class="ct">Cognitive and Computational Neuroscience · 2026-04</h1>
+  <div class="ct-meta">
+    Unclustered papers · 7 papers
+    · pool TTL 8 weeks
+  </div>
+  <p class="ct-summary">이 페이지의 논문들은 아직 어떤 cluster에도 속하지 못한 상태입니다.
+  다음 주 실행에서 기존 cluster로 재흡수되거나 새 cluster로 승격될 수 있습니다.</p>
+  <div class="ct-section"><h2>Members by week</h2>
+    <div class="members-weekly"><details class="week-group" open><summary class="week-header"><span class="week-emoji">📅</span><span class="week-label">Week of 2026-04-20</span><span class="week-count">7 orphans</span></summary><div class="paper-grid"><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2018%20-%20Owens%20et%20al.%20-%20Interoceptive%20inference%3B%20From%20computational%20neuroscience%20to%20clinic.pdf">Interoceptive inference; From computational neuroscience to clinic</a></h4><div class="paper-authors">Owens et al.</div><p class="paper-snippet">Interoceptive inference: From computational neuroscience to clinic Andrew P. Owensa,b,c,⁎, Micah Allend,e, Sasha Ondobakae,f, Karl J.</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2018%20-%20Palmer%2C%20Tsakiris%20-%20Going%20at%20the%20heart%20of%20social%20cognition%3B%20is%20there%20a%20role%20for%20interoception%20in%20self-other%20distinction.pdf">Going at the heart of social cognition; is there a role for interoception in self-other distinction</a></h4><div class="paper-authors">Palmer, Tsakiris</div><p class="paper-snippet">Going at the heart of social cognition: is there a role for interoception in self-other distinction? Clare E[TD$FIRSTNAME.E] Palmer[TD$SURNAME.E]1 and Manos[TD$FIRSTNAME.E] Tsakiris[TD$SURNAME.E]1,2 Interoception describ…</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2019%20-%20FeldmanHall%2C%20Shenhav%20-%20Resolving%20uncertainty%20in%20a%20social%20world.pdf">Resolving uncertainty in a social world</a></h4><div class="paper-authors">FeldmanHall, Shenhav</div><p class="paper-snippet">Perspective Department of Cognitive, Linguistic, Psychological Sciences, Brown University, Providence, Rhode Island, USA.</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2020%20-%20Sapey%E2%80%90Triomphe%20et%20al.%20-%20Priors%20Bias%20Perceptual%20Decisions%20in%20Autism%2C%20But%20Are%20Less%20Flexibly%20Adjusted%20to%20the%20Context.pdf">Priors Bias Perceptual Decisions in Autism, But Are Less Flexibly Adjusted to the Context</a></h4><div class="paper-authors">Sapey‐Triomphe et al.</div><p class="paper-snippet">HAL Id: hal-04434702 Submitted on 10 Sep 2024 HAL is a multi-disciplinary open access archive for the deposit and dissemination of sci- entific research documents, whether they are pub- lished or not.</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2024%20-%20Keysers%20et%20al.%20-%20Predictive%20coding%20for%20the%20actions%20and%20emotions%20of%20others%20and%20its%20deficits%20in%20autism%20spectrum%20disorders.pdf">Predictive coding for the actions and emotions of others and its deficits in autism spectrum disorders</a></h4><div class="paper-authors">Keysers et al.</div><p class="paper-snippet">Predictive coding for the actions and emotions of others and its deficits in autism spectrum disorders Christian Keysers a,b,*, Giorgia Silani c, Valeria Gazzola a,b a Social Brain Lab, Netherlands Institute for Neurosci…</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2026%20-%20Eperon%20et%20al.%20-%20Action%20information%20is%20integrated%20into%20entorhinal%20representations%20of%20conceptual%20space%20and%20is%20reflected%20in%20eye%20movements.pdf">Action information is integrated into entorhinal representations of conceptual space and is reflected in eye movements</a></h4><div class="paper-authors">Eperon et al.</div><p class="paper-snippet">The hippocampal-entorhinal system represents relations between states in spatial and nonspatial cognitive maps.</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article><article class="paper-card"><h4 class="paper-title"><a href="../Cognitive%20and%20Computational%20Neuroscience/2026%20-%20Frisby%20et%20al.%20-%20All%20spectral%20frequencies%20of%20neural%20activity%20reveal%20semantic%20representation%20in%20the%20human%20anterior%20ventral%20temporal%20cortex.pdf">All spectral frequencies of neural activity reveal semantic representation in the human anterior ventral temporal cortex</a></h4><div class="paper-authors">Frisby et al.</div><p class="paper-snippet">Intracranial electrophysiology offers a unique insight into the nature of information representation in the brain—­it can be used to disentangle information encoded in gamma and high gamma frequencies from information en…</p><div class="paper-meta">first seen 2026-04-20 · 1 attempt</div></article></div></details></div>
+  </div>
+</div></body></html>
