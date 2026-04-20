@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Daily Brief · 2026-04-20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4efe6;--paper-2:#ebe5d8;--ink:#1a1613;--ink-2:#3a332d;
+--mute:#7a7065;--rule:#d9d1c1;--card:#fbf7ee;
+--accent:#9c2a1a;--accent-2:#2d4a2b;--accent-3:#b5821f;--accent-4:#3c5f7a;
+--cols:2}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);
+font-family:"IBM Plex Sans KR","Newsreader",-apple-system,BlinkMacSystemFont,sans-serif;
+font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+background-image:radial-gradient(rgba(0,0,0,0.018) 1px,transparent 1px);
+background-size:3px 3px}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:36px 40px 80px}
+.mast{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink);
+padding:14px 0 10px;display:flex;align-items:baseline;justify-content:space-between;
+gap:20px;flex-wrap:wrap}
+.mast-left{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.mast-title{font-family:"Newsreader",serif;font-weight:700;font-size:42px;
+line-height:1;letter-spacing:-0.02em;font-style:italic}
+.mast-sub{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute)}
+.mast-right{font-family:"JetBrains Mono",monospace;font-size:11px;
+letter-spacing:0.08em;color:var(--mute);text-transform:uppercase;text-align:right}
+.mast-right b{color:var(--ink);font-weight:500}
+.strap{display:flex;justify-content:space-between;align-items:center;
+padding:8px 0 24px;border-bottom:1px solid var(--rule);margin-bottom:28px;
+font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.15em;text-transform:uppercase;color:var(--mute)}
+.strap .dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+background:var(--accent);margin-right:6px;vertical-align:middle;animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:0;
+border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);margin-bottom:40px}
+.hero-main{padding:28px 36px 32px 0;border-right:1px solid var(--rule)}
+.hero-side{padding:28px 0 32px 36px}
+.kicker{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);
+font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.kicker::after{content:"";flex:1;height:1px;background:var(--accent);opacity:.3}
+.hero-h{font-family:"Newsreader",serif;font-weight:500;font-size:52px;
+line-height:1.02;letter-spacing:-0.02em;margin:0 0 16px;color:var(--ink)}
+.hero-h em{font-style:italic;color:var(--accent)}
+.hero-lede{font-family:"Newsreader",serif;font-size:18px;line-height:1.5;
+color:var(--ink-2);margin:0 0 22px;max-width:46ch;text-wrap:pretty}
+.hero-stats{display:flex;gap:28px;padding-top:18px;border-top:1px solid var(--rule)}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:"Newsreader",serif;font-size:32px;font-weight:600;
+line-height:1;font-feature-settings:"tnum"}
+.stat span{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute)}
+.side-h{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.18em;text-transform:uppercase;color:var(--mute);
+margin:0 0 14px;display:flex;align-items:center;gap:10px}
+.side-h::after{content:"";flex:1;height:1px;background:var(--rule)}
+.pulse-list{display:flex;flex-direction:column;gap:10px}
+.pulse-item{display:grid;grid-template-columns:32px 1fr auto;align-items:center;
+gap:12px;padding:10px 0;border-bottom:1px dotted var(--rule);
+cursor:pointer;transition:background .15s}
+.pulse-item:last-child{border-bottom:none}
+.pulse-item:hover{background:rgba(156,42,26,0.04)}
+.pulse-rank{font-family:"Newsreader",serif;font-size:22px;font-style:italic;
+color:var(--mute);font-feature-settings:"tnum"}
+.pulse-name{font-weight:500;font-size:14.5px;line-height:1.25}
+.pulse-name small{display:block;color:var(--mute);font-size:12px;font-weight:400;margin-top:2px}
+.pulse-bar{width:72px;height:6px;background:var(--paper-2);border-radius:3px;
+position:relative;overflow:hidden}
+.pulse-bar::after{content:"";position:absolute;inset:0;width:var(--w,50%);
+background:var(--accent);border-radius:3px}
+.pulse-count{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mute);margin-top:4px}
+.themes{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+background:var(--rule);border:1px solid var(--rule);margin-bottom:48px}
+.t-card{background:var(--paper);padding:20px 22px 22px;
+display:flex;flex-direction:column;gap:10px;min-height:220px;position:relative}
+.t-label{font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.16em;text-transform:uppercase;color:var(--mute)}
+.t-title{font-family:"Newsreader",serif;font-weight:500;font-size:22px;
+line-height:1.1;letter-spacing:-0.01em;margin:2px 0 4px}
+.t-desc{font-size:13.5px;line-height:1.5;color:var(--ink-2);flex:1;text-wrap:pretty}
+.t-bar{height:4px;background:var(--paper-2);border-radius:2px;
+position:relative;overflow:hidden;margin-top:6px}
+.t-bar::after{content:"";position:absolute;inset:0;width:var(--w,50%);background:var(--accent)}
+.t-count{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mute);
+display:flex;justify-content:space-between}
+.t-count b{color:var(--ink);font-weight:500}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;
+margin:48px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.sec-h{font-family:"Newsreader",serif;font-weight:600;font-size:30px;
+letter-spacing:-0.015em;margin:0}
+.sec-meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.15em;text-transform:uppercase;color:var(--mute)}
+.catnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
+.catnav a{text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+padding:7px 13px 7px 11px;background:var(--card);border:1px solid var(--rule);
+border-radius:999px;font-size:12.5px;font-weight:500;color:var(--ink);transition:all .15s}
+.catnav a:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.catnav a .n{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--mute);
+background:var(--paper-2);padding:1px 6px;border-radius:999px}
+.catnav a:hover .n{background:rgba(244,239,230,0.2);color:var(--paper)}
+.cat-section{margin-top:56px;scroll-margin-top:20px}
+.cat-header{display:grid;grid-template-columns:auto 1fr auto;align-items:end;
+gap:20px;padding-bottom:12px;border-bottom:1px solid var(--ink);margin-bottom:24px}
+.cat-num{font-family:"Newsreader",serif;font-style:italic;font-size:56px;
+font-weight:400;line-height:0.9;color:var(--accent);font-feature-settings:"tnum"}
+.cat-title{font-family:"Newsreader",serif;font-weight:500;font-size:28px;
+line-height:1.1;letter-spacing:-0.015em;margin:0}
+.cat-title small{display:block;font-family:"JetBrains Mono",monospace;
+font-size:10.5px;font-weight:400;letter-spacing:0.15em;text-transform:uppercase;
+color:var(--mute);margin-top:6px}
+.cat-pill{font-family:"JetBrains Mono",monospace;font-size:11px;
+padding:4px 10px;background:var(--ink);color:var(--paper);
+border-radius:999px;white-space:nowrap}
+.col-toggle{position:fixed;right:18px;bottom:18px;display:flex;align-items:center;
+gap:4px;background:var(--paper);border:1px solid var(--ink);padding:4px;z-index:50;
+font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:0.1em;
+text-transform:uppercase;box-shadow:0 8px 22px -14px rgba(26,22,19,0.35)}
+.col-toggle .lbl{padding:0 8px 0 6px;color:var(--mute)}
+.col-toggle button{appearance:none;font:inherit;background:transparent;color:var(--ink);
+border:none;padding:6px 10px;cursor:pointer;display:flex;align-items:center;gap:4px;
+transition:background .15s,color .15s}
+.col-toggle button:hover{background:var(--paper-2)}
+.col-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.col-toggle .glyph{display:inline-flex;gap:2px}
+.col-toggle .glyph i{display:block;width:3px;height:11px;background:currentColor}
+.cluster-group{margin-bottom:28px}
+.cluster-head{background:var(--paper-2);border-left:3px solid var(--accent);
+padding:12px 16px;margin-bottom:1px;position:relative}
+.cluster-badge{position:absolute;top:10px;right:12px;
+font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:0.12em;
+text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:600}
+.cluster-badge{margin-left:6px}
+.cluster-badge.new{background:var(--accent);color:var(--paper)}
+.cluster-badge.ext{background:var(--ink);color:var(--paper)}
+.cluster-badge.ren{background:var(--accent-3);color:var(--paper)}
+.cluster-badge.rev{background:#4a7a3c;color:var(--paper)}
+.cluster-badge.rising{background:#c7521a;color:var(--paper)}
+.cluster-badge{position:static;display:inline-block;vertical-align:middle}
+.cluster-head .cluster-badge:first-of-type{position:absolute;top:10px;right:12px}
+.cluster-sparkline{display:flex;align-items:flex-end;gap:2px;height:22px;
+margin-top:8px;max-width:180px}
+.cluster-sparkline span{display:block;flex:1;background:var(--ink-2);
+opacity:0.25;min-height:2px;border-radius:1px}
+.cluster-sparkline span.has{opacity:0.85;background:var(--accent)}
+.evo-item.evo-ren{border-left:3px solid var(--accent-3)}
+.evo-item.evo-rev{border-left:3px solid #4a7a3c}
+.evo-item.evo-rising{border-left:3px solid #c7521a}
+.evo-item.evo-split{border-left:3px solid #7a3c7a}
+.evo-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px}
+.evo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+background:var(--card);border:1px solid var(--rule);border-radius:4px;
+font-size:13.5px}
+.evo-item.evo-born{border-left:3px solid var(--accent)}
+.evo-item.evo-ext{border-left:3px solid var(--ink)}
+.evo-icon{font-size:16px}
+.evo-kind{font-family:"JetBrains Mono",monospace;font-size:9.5px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+padding:2px 6px;border:1px solid var(--rule);border-radius:3px}
+.evo-name{font-family:"Newsreader",serif;font-weight:500;flex:1;min-width:0;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evo-meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--mute)}
+@media(max-width:700px){
+.evo-list{grid-template-columns:1fr}
+.evo-item{flex-wrap:wrap;align-items:flex-start}
+.evo-name{white-space:normal}
+.evo-meta{width:100%;white-space:normal}
+}
+.cluster-label{font-family:"JetBrains Mono",monospace;font-size:9.5px;
+letter-spacing:0.14em;text-transform:uppercase;color:var(--mute)}
+.cluster-name{display:block;font-family:"Newsreader",serif;font-weight:500;
+font-size:17px;margin:4px 0 0}
+.cluster-summary{font-size:13.5px;color:var(--ink-2);margin:6px 0 0;line-height:1.5}
+.clusters-grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));
+gap:24px;align-items:start;margin-top:8px}
+.clusters-grid>.cluster-group{margin-bottom:0}
+.clusters-grid .papers{grid-template-columns:1fr}
+.papers{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));
+gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.paper{background:var(--card);padding:22px 24px;
+display:flex;flex-direction:column;gap:8px;
+text-decoration:none;color:inherit;transition:background .18s;position:relative}
+.paper:hover{background:var(--paper-2)}
+.paper-year{position:absolute;top:18px;right:22px;
+font-family:"Newsreader",serif;font-style:italic;
+font-size:14px;color:var(--mute);font-feature-settings:"tnum"}
+.paper-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:2px}
+.tag{font-family:"JetBrains Mono",monospace;font-size:9.5px;
+letter-spacing:0.1em;text-transform:uppercase;
+padding:2px 7px;border:1px solid var(--rule);border-radius:3px;color:var(--mute)}
+.tag.hot{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.paper-title{font-family:"Newsreader",serif;font-weight:500;font-size:18px;
+line-height:1.2;letter-spacing:-0.005em;margin:0;padding-right:44px;text-wrap:pretty}
+.paper-authors{font-family:"Newsreader",serif;font-style:italic;
+font-size:13.5px;color:var(--mute)}
+.paper-summary{font-size:13.5px;line-height:1.55;color:var(--ink-2);margin-top:4px;text-wrap:pretty}
+.paper-read{margin-top:auto;padding-top:10px;
+font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+display:flex;align-items:center;gap:6px}
+.paper:hover .paper-read{color:var(--accent)}
+.paper-read .arr{transition:transform .2s}
+.paper:hover .paper-read .arr{transform:translateX(4px)}
+.papers.single{grid-template-columns:1fr}
+.cluster-count{display:inline-flex;align-items:baseline;gap:6px;margin-top:6px;
+font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--mute);
+letter-spacing:0.05em}
+.cluster-count b{font-family:"Newsreader",serif;font-size:18px;font-weight:500;
+color:var(--ink);font-feature-settings:"tnum"}
+.cluster-count .added{color:var(--accent);font-weight:600}
+.cluster-preview{display:grid;grid-template-columns:1fr;gap:1px;
+background:var(--rule);border:1px solid var(--rule);margin-top:10px}
+.cluster-preview .rep{background:var(--card);padding:10px 14px;
+text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:2px;
+transition:background .15s}
+.cluster-preview .rep:hover{background:var(--paper-2)}
+.rep-title{font-family:"Newsreader",serif;font-weight:500;font-size:14.5px;
+line-height:1.3;color:var(--ink);text-wrap:pretty}
+.rep-authors{font-family:"JetBrains Mono",monospace;font-size:10px;
+color:var(--mute);letter-spacing:0.04em}
+.cluster-foot{margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule);
+font-family:"JetBrains Mono",monospace;font-size:10px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+display:flex;align-items:center;gap:6px}
+.cluster-foot a{color:var(--accent);text-decoration:none}
+.cluster-foot a:hover{text-decoration:underline}
+.orphan-badge{display:inline-flex;align-items:center;gap:6px;
+font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.1em;text-transform:uppercase;
+background:var(--card);border:1px solid var(--rule);
+padding:4px 10px;border-radius:999px;color:var(--ink-2);
+text-decoration:none;white-space:nowrap;margin-left:10px}
+.orphan-badge:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+footer{margin-top:80px;padding-top:20px;border-top:3px double var(--ink);
+font-family:"JetBrains Mono",monospace;font-size:10.5px;
+letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
+display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(min-width:1400px){:root{--cols:3}}
+@media(max-width:1100px){:root{--cols:2}}
+@media(max-width:760px){:root{--cols:1}}
+html[data-cols="1"]{--cols:1!important}
+html[data-cols="2"]{--cols:2!important}
+html[data-cols="3"]{--cols:3!important}
+@media print{.col-toggle{display:none}}
+@media(max-width:980px){
+.hero{grid-template-columns:1fr}
+.hero-main{border-right:none;border-bottom:1px solid var(--rule);padding:24px 0}
+.hero-side{padding:24px 0}
+.themes{grid-template-columns:repeat(2,1fr)}
+.hero-h{font-size:40px}}
+@media(max-width:600px){
+.wrap{padding:20px 18px 60px}
+.mast-title{font-size:30px}
+.hero-h{font-size:32px}
+.themes{grid-template-columns:1fr}
+.cat-num{font-size:42px}
+.cat-title{font-size:22px}
+.paper-title{font-size:17px}
+.col-toggle{right:10px;bottom:10px}}
+</style>
+</head>
+<body>
+<div class="col-toggle" role="group" aria-label="Column layout">
+  <span class="lbl">Layout</span>
+  <button data-cols="1" aria-pressed="false" title="Single column">
+    <span class="glyph"><i></i></span>1
+  </button>
+  <button data-cols="2" aria-pressed="false" title="Two columns">
+    <span class="glyph"><i></i><i></i></span>2
+  </button>
+  <button data-cols="3" aria-pressed="false" title="Three columns">
+    <span class="glyph"><i></i><i></i><i></i></span>3
+  </button>
+  <button data-cols="auto" aria-pressed="true" title="Responsive auto">Auto</button>
+</div>
+<script>
+  (function() {
+    var key = 'daily-brief-cols';
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll('.col-toggle button');
+    function apply(choice) {
+      if (choice === 'auto' || !choice) root.removeAttribute('data-cols');
+      else root.setAttribute('data-cols', choice);
+      buttons.forEach(function(button) {
+        button.setAttribute('aria-pressed', button.dataset.cols === (choice || 'auto') ? 'true' : 'false');
+      });
+    }
+    try { apply(localStorage.getItem(key) || 'auto'); } catch (err) { apply('auto'); }
+    buttons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        var choice = button.dataset.cols;
+        apply(choice);
+        try { localStorage.setItem(key, choice); } catch (err) {}
+      });
+    });
+  })();
+</script>
+<div class="wrap">
+
+  <div class="mast">
+    <div class="mast-left">
+      <div class="mast-title">Daily Brief</div>
+      <div class="mast-sub">Neuroscience · 매일의 논문 요약</div>
+    </div>
+    <div class="mast-right">
+      Vol.&nbsp;2026 · Iss.&nbsp;04 · <b>20 April 2026</b><br>
+      Generated 19:55 KST
+    </div>
+  </div>
+
+  <div class="strap">
+    <span><span class="dot"></span>Today's Reading List · 26 articles</span>
+    <span>Window: today &nbsp;·&nbsp; Baseline: last 14 days</span>
+  </div>
+
+  <section class="hero">
+    <div class="hero-main">
+      <div class="kicker">Today's Through-line</div>
+      <h1 class="hero-h">자기인식-예측코딩-사회적불확실성</h1>
+      <p class="hero-lede">오늘 수집된 26편의 논문은 뇌의 내감각 처리와 자기‑타자 구분, 예측 코딩이 사회적 불확실성 해결에 깊이 관여함을 보여준다. Craig 등(2025)은 후각피질‑insular 경로를 통해 내감각 신호가 의미 표현을 전 주파수대 전두측두피질에서 통합한다고 밝혔고, Seth 등(2025)은 자폐 spectrum에서 예측 코딩 결함이 행동 정보와 내후피질 개념 공간의 통합을 저해한다고 보고했다. 또한 Pellicano 등(2025)은 자폐 환자의 사회적 불확실성 해결에 자기‑타자 구분 능력이 핵심 역할을 한다고 제안하며, 새로운 신체 기반 자기 인식 모델을 제시했다.</p>
+      <div class="hero-stats">
+        <div class="stat"><b>26</b><span>new articles</span></div>
+        <div class="stat"><b>8</b><span>categories</span></div>
+        <div class="stat"><b>26</b><span>themes</span></div>
+        <div class="stat"><b>16</b><span>papers 2025–2026</span></div>
+      </div>
+    </div>
+    <div class="hero-side">
+      <div class="side-h">Theme Pulse · 주제 밀도</div>
+      <div class="pulse-list"><div class="pulse-item" onclick="location.href='#cat-cognitive-and-computational-neuroscience'"><div class="pulse-rank">01</div><div class="pulse-name">내감각 추론과 계산신경과학 임상<small>Cognitive and Computational Neuroscience</small></div><div><div class="pulse-bar" style="--w:100%"></div><div class="pulse-count">1편</div></div></div><div class="pulse-item" onclick="location.href='#cat-cognitive-and-computational-neuroscience'"><div class="pulse-rank">02</div><div class="pulse-name">내감각과 자기-타자 구분<small>Cognitive and Computational Neuroscience</small></div><div><div class="pulse-bar" style="--w:100%"></div><div class="pulse-count">1편</div></div></div><div class="pulse-item" onclick="location.href='#cat-cognitive-and-computational-neuroscience'"><div class="pulse-rank">03</div><div class="pulse-name">사회적 불확실성 해결<small>Cognitive and Computational Neuroscience</small></div><div><div class="pulse-bar" style="--w:100%"></div><div class="pulse-count">1편</div></div></div><div class="pulse-item" onclick="location.href='#cat-cognitive-and-computational-neuroscience'"><div class="pulse-rank">04</div><div class="pulse-name">자폐 spectrum Prior와 지각적 의사결정<small>Cognitive and Computational Neuroscience</small></div><div><div class="pulse-bar" style="--w:100%"></div><div class="pulse-count">1편</div></div></div></div>
+    </div>
+  </section>
+
+  <div class="sec-head"><h2 class="sec-h">Top Themes</h2><div class="sec-meta">급부상 없음 · 기준 데이터 축적 중</div></div><div class="themes"><div class="t-card"><div class="t-label">Theme 01 · Largest</div><div class="t-title">내감각 추론과 계산신경과학 임상</div><div class="t-desc"></div><div class="t-bar" style="--w:100%"></div><div class="t-count"><span>1편</span><b>3%</b></div></div><div class="t-card"><div class="t-label">Theme 02 · High Volume</div><div class="t-title">내감각과 자기-타자 구분</div><div class="t-desc"></div><div class="t-bar" style="--w:100%"></div><div class="t-count"><span>1편</span><b>3%</b></div></div><div class="t-card"><div class="t-label">Theme 03 · Recurring</div><div class="t-title">사회적 불확실성 해결</div><div class="t-desc"></div><div class="t-bar" style="--w:100%"></div><div class="t-count"><span>1편</span><b>3%</b></div></div><div class="t-card"><div class="t-label">Theme 04 · Context</div><div class="t-title">자폐 spectrum Prior와 지각적 의사결정</div><div class="t-desc"></div><div class="t-bar" style="--w:100%"></div><div class="t-count"><span>1편</span><b>3%</b></div></div></div>
+
+  
+
+  <div class="sec-head">
+    <h2 class="sec-h">Today's Reading</h2>
+    <div class="sec-meta">8 categories · 26 articles</div>
+  </div>
+
+  <nav class="catnav"><a href="#cat-cognitive-and-computational-neuroscience">Cognitive and Computational Neuroscience <span class="n">7</span></a><a href="#cat-psychiatry-and-behavioral-neuroscience">Psychiatry and Behavioral Neuroscience <span class="n">7</span></a><a href="#cat-metabolism-and-neurodevelopment">Metabolism and Neurodevelopment <span class="n">4</span></a><a href="#cat-consciousness-and-theoretical-neuroscience">Consciousness and Theoretical Neuroscience <span class="n">3</span></a><a href="#cat-neuroimmunology-and-inflammation">Neuroimmunology and Inflammation <span class="n">2</span></a><a href="#cat-cellular-and-molecular-neuroscience">Cellular and Molecular Neuroscience <span class="n">1</span></a><a href="#cat-clinical-neuroscience-and-disorders">Clinical Neuroscience and Disorders <span class="n">1</span></a><a href="#cat-health-technology-and-digital-interventions">Health Technology and Digital Interventions <span class="n">1</span></a></nav>
+
+  <section class="cat-section" id="cat-cognitive-and-computational-neuroscience"><div class="cat-header"><div class="cat-num">01</div><div><h3 class="cat-title">Cognitive and Computational Neuroscience</h3></div><div><span class="cat-pill">7 papers</span><a class="orphan-badge" href="orphans-cognitive-and-computational-neuroscience.html" title="Unclustered papers awaiting future grouping">🗂 7 unclustered</a></div></div></section><section class="cat-section" id="cat-psychiatry-and-behavioral-neuroscience"><div class="cat-header"><div class="cat-num">02</div><div><h3 class="cat-title">Psychiatry and Behavioral Neuroscience</h3></div><div><span class="cat-pill">7 papers</span><a class="orphan-badge" href="orphans-psychiatry-and-behavioral-neuroscience.html" title="Unclustered papers awaiting future grouping">🗂 7 unclustered</a></div></div></section><section class="cat-section" id="cat-metabolism-and-neurodevelopment"><div class="cat-header"><div class="cat-num">03</div><div><h3 class="cat-title">Metabolism and Neurodevelopment</h3></div><div><span class="cat-pill">4 papers</span><a class="orphan-badge" href="orphans-metabolism-and-neurodevelopment.html" title="Unclustered papers awaiting future grouping">🗂 4 unclustered</a></div></div></section><section class="cat-section" id="cat-consciousness-and-theoretical-neuroscience"><div class="cat-header"><div class="cat-num">04</div><div><h3 class="cat-title">Consciousness and Theoretical Neuroscience</h3></div><div><span class="cat-pill">3 papers</span><a class="orphan-badge" href="orphans-consciousness-and-theoretical-neuroscience.html" title="Unclustered papers awaiting future grouping">🗂 3 unclustered</a></div></div></section><section class="cat-section" id="cat-neuroimmunology-and-inflammation"><div class="cat-header"><div class="cat-num">05</div><div><h3 class="cat-title">Neuroimmunology and Inflammation</h3></div><div><span class="cat-pill">2 papers</span><a class="orphan-badge" href="orphans-neuroimmunology-and-inflammation.html" title="Unclustered papers awaiting future grouping">🗂 2 unclustered</a></div></div></section><section class="cat-section" id="cat-cellular-and-molecular-neuroscience"><div class="cat-header"><div class="cat-num">06</div><div><h3 class="cat-title">Cellular and Molecular Neuroscience</h3></div><div><span class="cat-pill">1 paper</span><a class="orphan-badge" href="orphans-cellular-and-molecular-neuroscience.html" title="Unclustered papers awaiting future grouping">🗂 1 unclustered</a></div></div></section><section class="cat-section" id="cat-clinical-neuroscience-and-disorders"><div class="cat-header"><div class="cat-num">07</div><div><h3 class="cat-title">Clinical Neuroscience and Disorders</h3></div><div><span class="cat-pill">1 paper</span><a class="orphan-badge" href="orphans-clinical-neuroscience-and-disorders.html" title="Unclustered papers awaiting future grouping">🗂 1 unclustered</a></div></div></section><section class="cat-section" id="cat-health-technology-and-digital-interventions"><div class="cat-header"><div class="cat-num">08</div><div><h3 class="cat-title">Health Technology and Digital Interventions</h3></div><div><span class="cat-pill">1 paper</span><a class="orphan-badge" href="orphans-health-technology-and-digital-interventions.html" title="Unclustered papers awaiting future grouping">🗂 1 unclustered</a></div></div></section>
+
+  <footer>
+    <span>Daily Brief · Neuroscience Edition</span>
+    <span>Window: today · Baseline: last 14 days</span>
+    <span>26 articles · 8 categories · 26 themes</span>
+    <a href="index.html" style="color:inherit">↑ index</a>
+  </footer>
+
+</div>
+</body>
+</html>

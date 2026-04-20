@@ -29,7 +29,10 @@ from typing import Optional
 # Tunables
 # ---------------------------------------------------------------------------
 
-TAU_JOIN = 0.60          # cosine sim >= τ_join → absorb into existing cluster
+TAU_JOIN = 0.50          # cosine sim >= τ_join → absorb into existing cluster
+                         # (loosened from 0.60 per cluster_page_plan.md §열린 질문-1
+                         # to reduce orphan pressure; trade-off: false-positive
+                         # absorption risk, watched via centroid drift)
 TAU_CANDIDATE = 0.45     # below this: definitely orphan (reserved; MVP treats
                          # anything < τ_join as orphan)
 TAU_REVIVE = 0.65        # dormant cluster revival threshold
@@ -355,6 +358,58 @@ def absorb(lc: LivingCluster, today_fnames: list[str], today_embeddings, today_i
         "at": today_iso,
         "type": "extended",
         "added_files": list(today_fnames),
+        "n_before": n_before,
+        "n_after": lc.size,
+        "centroid_shift_cos": round(shift, 4),
+    }
+    lc.events.append(ev)
+    return ev
+
+
+def absorb_backfill(
+    lc: LivingCluster,
+    triples: list[tuple[str, object, str]],  # (fname, embedding, original_added_iso)
+    today_iso: str,
+) -> Optional[dict]:
+    """Back-fill version of :func:`absorb`.
+
+    Differs from ``absorb`` in two ways:
+      * each member's ``added`` field is stored as its **original** detection
+        date (when it first entered the orphan pool), not today's date
+      * emits an event of type ``"backfill"`` so audit logs can distinguish
+        it from a normal same-week extension
+
+    UI treats backfill identically to ``extended`` per the plan decision.
+    """
+    import numpy as np
+    if not triples:
+        return None
+    n_before = lc.size
+    n = n_before
+    c = np.asarray(lc.centroid, dtype=np.float32) if lc.centroid else None
+    added_files: list[str] = []
+    for fname, emb, added_iso in triples:
+        e = np.asarray(emb, dtype=np.float32)
+        if c is None or n == 0:
+            c = e.copy()
+        else:
+            c = (c * n + e) / (n + 1)
+        n += 1
+        lc.members.append({
+            "fname": fname,
+            "added": (added_iso or today_iso)[:10],
+        })
+        added_files.append(fname)
+    shift = 0.0
+    if lc.centroid and c is not None:
+        shift = 1.0 - cosine_sim(lc.centroid, c.tolist())
+    if c is not None:
+        lc.centroid = [float(x) for x in c.tolist()]
+    lc.updated_at = datetime.now().isoformat(timespec="seconds")
+    ev = {
+        "at": today_iso,
+        "type": "backfill",
+        "added_files": added_files,
         "n_before": n_before,
         "n_after": lc.size,
         "centroid_shift_cos": round(shift, 4),

@@ -1,6 +1,4 @@
-{"date": "2026-04-19", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": true, "elapsed_sec": 433.6, "ts": "2026-04-19T17:17:55"}
-{"date": "2026-04-19", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": false, "elapsed_sec": 12.8, "ts": "2026-04-19T17:29:09"}
-{"date": "2026-04-19", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": false, "elapsed_sec": 2.5, "ts": "2026-04-19T17:30:38"}
-{"date": "2026-04-19", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": false, "elapsed_sec": 2.6, "ts": "2026-04-19T17:35:00"}
-{"date": "2026-04-19", "from_date": "2026-04-01", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": false, "elapsed_sec": 2.5, "ts": "2026-04-19T17:46:15"}
-{"date": "2026-04-19", "from_date": "2026-04-01", "to_date": "2026-04-19", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": false, "elapsed_sec": 2.5, "ts": "2026-04-19T17:48:57"}
+{"date": "2026-04-20", "today_count": 0, "note": "no new articles", "ts": "2026-04-20T19:42:10"}
+{"date": "2026-04-07", "today_count": 0, "note": "no new articles", "ts": "2026-04-20T19:42:24"}
+{"date": "2026-04-14", "today_count": 0, "note": "no new articles", "ts": "2026-04-20T19:42:24"}
+{"date": "2026-04-20", "from_date": "2026-04-15", "to_date": "2026-04-20", "today_count": 26, "recent_count": 0, "clusters": 26, "llm": true, "elapsed_sec": 783.4, "ts": "2026-04-20T19:55:27"}
