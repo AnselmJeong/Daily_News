@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Watch Articles/ for new/changed PDFs and trigger daily_news.py a couple
+# Watch Articles/ for new/changed PDFs and trigger weekly_news a couple
 # minutes AFTER activity settles (so we don't re-run mid-drag-and-drop).
 #
 # Requires fswatch:  brew install fswatch
@@ -44,7 +44,7 @@ debouncer() {
     ran=$(cat "${RAN_FOR_FILE}" 2>/dev/null || echo 0)
     delta=$((now - last))
     if [ "${delta}" -ge "${COOLDOWN}" ] && [ "${last}" -gt "${ran}" ]; then
-      echo "[$(date '+%H:%M:%S')] quiet for ${delta}s since last change — running daily_news"
+      echo "[$(date '+%H:%M:%S')] quiet for ${delta}s since last change — running weekly_news"
       "${SCRIPT_DIR}/run_daily_news.sh"
       echo "${last}" > "${RAN_FOR_FILE}"
     fi

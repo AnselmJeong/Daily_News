@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """
-daily-news  —  Daily news page generator for the Articles folder.
+weekly-news  —  Weekly news page generator for the Articles folder.
 
 Pipeline (idempotent, cache-backed):
-  1. Harvest   : today's new PDFs from index.json + root-level unindexed PDFs.
+  1. Harvest   : PDFs added in the target weekly window from index.json.
   2. Extract   : title + abstract (PyMuPDF, heuristic).
   3. Embed     : sentence-transformers (all-MiniLM-L6-v2).
   4. Cluster   : HDBSCAN per category, combining today + last 14 days.
   5. Name      : Ollama (minimax-m2.7:cloud) labels each cluster.
   6. Rising    : Poisson-residual score vs baseline.
-  7. Render    : daily-YYYY-MM-DD.html + refresh _news/index.html rollup.
+  7. Render    : weekly issue HTML + refresh _news/index.html rollup.
 
 Typical invocations:
-  daily-news                              # today, evening run
-  daily-news --date 2026-04-18            # rebuild a specific day
-  daily-news --from 2026-04-01 --to 2026-04-19  # ingest a date range
-  daily-news --since-hours 3              # ingest only pdfs added in last 3h
-  daily-news --no-llm                     # skip theme naming (cluster labels only)
-  daily-news --articles-root /path/to/Articles   # point at a specific root
+  weekly-news                              # today, evening run
+  weekly-news --date 2026-04-18            # rebuild a specific day
+  weekly-news --from 2026-04-01 --to 2026-04-19  # ingest a date range
+  weekly-news --since-hours 3              # ingest only pdfs added in last 3h
+  weekly-news --no-llm                     # skip theme naming (cluster labels only)
+  weekly-news --articles-root /path/to/Articles   # point at a specific root
 
 Articles-root resolution order:
   1. --articles-root CLI flag
@@ -91,7 +91,6 @@ def resolve_articles_root(cli_arg: Optional[str]) -> Path:
 
 # tunables
 BASELINE_DAYS = 14              # window for clustering context + baseline
-ROOT_MTIME_FALLBACK_DAYS = 2    # how far back to trust root mtime for "today"
 MIN_CLUSTER_SIZE = 3
 RISING_ACTIVE = 1.0
 RISING_HOT = 2.0
@@ -251,6 +250,8 @@ def harvest(
         if added < baseline_start:
             continue
         cat = meta.get("category", "_uncategorized")
+        if str(cat).strip().lower() in {"_uncategorized", "uncategorized"}:
+            continue
         rel = f"{cat}/{fname}"
         authors, title = parse_authors_title(fname)
         entry = Entry(
@@ -267,30 +268,6 @@ def harvest(
         if today_start <= added < today_end:
             today_entries.append(entry)
         else:
-            recent_entries.append(entry)
-
-    # root-level unindexed PDFs (by mtime — we trust up to ROOT_MTIME_FALLBACK_DAYS)
-    mtime_floor = today_start - timedelta(days=ROOT_MTIME_FALLBACK_DAYS)
-    for p in ARTICLES_ROOT.iterdir():
-        if not (p.is_file() and p.suffix.lower() == ".pdf"):
-            continue
-        mdt = datetime.fromtimestamp(p.stat().st_mtime)
-        if mdt < mtime_floor:
-            continue
-        authors, title = parse_authors_title(p.name)
-        entry = Entry(
-            fname=p.name,
-            category="_uncategorized",
-            added=mdt,
-            rel_path=p.name,
-            pub_year=parse_pub_year(p.name),
-            source="root",
-            title=title or p.name[:-4],
-            authors=authors,
-        )
-        if today_start <= mdt < today_end:
-            today_entries.append(entry)
-        elif mdt >= baseline_start:
             recent_entries.append(entry)
 
     log.info("harvest: today=%d  recent_context=%d  window=%s..%s",
@@ -1439,8 +1416,10 @@ transition:background .15s,color .15s}
 .col-toggle .glyph{display:inline-flex;gap:2px}
 .col-toggle .glyph i{display:block;width:3px;height:11px;background:currentColor}
 .cluster-group{margin-bottom:28px}
-.cluster-head{background:var(--paper-2);border-left:3px solid var(--accent);
-padding:12px 16px;margin-bottom:1px;position:relative}
+.cluster-head{display:block;background:var(--paper-2);border-left:3px solid var(--accent);
+padding:12px 16px;margin-bottom:1px;position:relative;text-decoration:none;color:inherit;
+transition:background .15s,border-color .15s}
+.cluster-head:hover{background:#e4ddcf;border-left-color:var(--ink)}
 .cluster-badge{position:absolute;top:10px;right:12px;
 font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:0.12em;
 text-transform:uppercase;padding:3px 8px;border-radius:3px;font-weight:600}
@@ -1462,7 +1441,8 @@ opacity:0.25;min-height:2px;border-radius:1px}
 .evo-item.evo-rising{border-left:3px solid #c7521a}
 .evo-item.evo-split{border-left:3px solid #7a3c7a}
 .evo-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px}
-.evo-item{display:flex;align-items:center;gap:10px;padding:10px 14px;
+.evo-item{display:grid;grid-template-columns:auto minmax(220px,1fr) minmax(0,auto);
+align-items:center;gap:10px;padding:10px 14px;
 background:var(--card);border:1px solid var(--rule);border-radius:4px;
 font-size:13.5px}
 .evo-item.evo-born{border-left:3px solid var(--accent)}
@@ -1471,14 +1451,14 @@ font-size:13.5px}
 .evo-kind{font-family:"JetBrains Mono",monospace;font-size:9.5px;
 letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
 padding:2px 6px;border:1px solid var(--rule);border-radius:3px}
-.evo-name{font-family:"Newsreader",serif;font-weight:500;flex:1;min-width:0;
-overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.evo-meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--mute)}
+.evo-name{font-family:"Newsreader",serif;font-weight:500;min-width:0;
+white-space:normal;overflow:visible;text-overflow:clip}
+.evo-meta{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--mute);
+text-align:right;white-space:normal}
 @media(max-width:700px){
 .evo-list{grid-template-columns:1fr}
-.evo-item{flex-wrap:wrap;align-items:flex-start}
-.evo-name{white-space:normal}
-.evo-meta{width:100%;white-space:normal}
+.evo-item{grid-template-columns:auto 1fr;align-items:flex-start}
+.evo-meta{grid-column:2;width:100%;text-align:left}
 }
 .cluster-label{font-family:"JetBrains Mono",monospace;font-size:9.5px;
 letter-spacing:0.14em;text-transform:uppercase;color:var(--mute)}
@@ -1532,12 +1512,6 @@ transition:background .15s}
 line-height:1.3;color:var(--ink);text-wrap:pretty}
 .rep-authors{font-family:"JetBrains Mono",monospace;font-size:10px;
 color:var(--mute);letter-spacing:0.04em}
-.cluster-foot{margin-top:8px;padding-top:8px;border-top:1px dashed var(--rule);
-font-family:"JetBrains Mono",monospace;font-size:10px;
-letter-spacing:0.12em;text-transform:uppercase;color:var(--mute);
-display:flex;align-items:center;gap:6px}
-.cluster-foot a{color:var(--accent);text-decoration:none}
-.cluster-foot a:hover{text-decoration:underline}
 .orphan-badge{display:inline-flex;align-items:center;gap:6px;
 font-family:"JetBrains Mono",monospace;font-size:10.5px;
 letter-spacing:0.1em;text-transform:uppercase;
@@ -1731,6 +1705,97 @@ def render_daily_html(
     # Through-line headline + lede
     headline, lede = generate_throughline(all_clusters, total, use_llm)
 
+    def _cluster_key(c: Cluster) -> str:
+        return c.living_uid or f"{c.category}:{c.cluster_id}"
+
+    def _canonical_name(c: Cluster) -> str:
+        if c.living_uid:
+            lc = living_by_uid.get(c.living_uid)
+            if lc and lc.theme_name:
+                return lc.theme_name
+        if c.theme_name:
+            return c.theme_name
+        if c.category:
+            return c.category
+        return c.living_uid or "Untitled Cluster"
+
+    def _canonical_summary(c: Cluster) -> str:
+        if c.living_uid:
+            lc = living_by_uid.get(c.living_uid)
+            if lc and lc.theme_summary:
+                return lc.theme_summary
+        return c.theme_summary
+
+    def _best_cluster(group: list[Cluster]) -> Cluster:
+        return max(
+            group,
+            key=lambda c: (
+                bool(c.theme_name),
+                bool(c.theme_summary),
+                c.n_today + c.n_recent,
+                c.n_today,
+            ),
+        )
+
+    def _group_clusters(clusters: list[Cluster]) -> list[list[Cluster]]:
+        grouped: dict[str, list[Cluster]] = {}
+        for c in clusters:
+            grouped.setdefault(_cluster_key(c), []).append(c)
+        return list(grouped.values())
+
+    def _unique_entries(entries: list[Entry]) -> list[Entry]:
+        seen: set[str] = set()
+        out: list[Entry] = []
+        for e in entries:
+            key = e.rel_path or f"{e.category}/{e.fname}"
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(e)
+        return out
+
+    def _merged_cluster(group: list[Cluster]) -> Cluster:
+        best = _best_cluster(group)
+        added_sum = sum(c.n_added_today for c in group)
+        total_after = max(
+            [c.prior_member_count + c.n_added_today for c in group]
+            + [c.n_today + c.n_recent for c in group]
+            + [added_sum]
+        )
+        merged = Cluster(
+            cluster_id=best.cluster_id,
+            category=best.category,
+            members_today=_unique_entries([e for c in group for e in c.members_today]),
+            members_recent=_unique_entries([e for c in group for e in c.members_recent]),
+            centroid=best.centroid,
+            theme_name=_canonical_name(best),
+            theme_name_fallback=all(c.theme_name_fallback for c in group),
+            theme_summary=_canonical_summary(best),
+            keywords=best.keywords,
+            keywords_are_fallback=best.keywords_are_fallback,
+            coherent=best.coherent,
+            rising_score=max(c.rising_score for c in group),
+            status=best.status,
+            living_uid=best.living_uid,
+            lineage=best.lineage,
+            prior_member_count=max(0, total_after - added_sum),
+            added_today_count=added_sum,
+            renamed=any(c.renamed for c in group),
+            name_before=next((c.name_before for c in group if c.name_before), ""),
+            revived=any(c.revived for c in group),
+            rename_reason=next((c.rename_reason for c in group if c.rename_reason), ""),
+            growth_rate_7d=max(c.growth_rate_7d for c in group),
+        )
+        if any(c.lineage == "born" for c in group):
+            merged.lineage = "born"
+        elif any(c.revived for c in group):
+            merged.lineage = "extended"
+        elif any(c.lineage == "extended" for c in group):
+            merged.lineage = "extended"
+        return merged
+
+    unique_all_clusters = [_merged_cluster(group) for group in _group_clusters(all_clusters)]
+
     # Formatting
     try:
         date_str = target_date.strftime("%-d %B %Y")
@@ -1739,8 +1804,8 @@ def render_daily_html(
     iss_str = str(target_date.month).zfill(2)
     gen_time = datetime.now().strftime("%H:%M KST")
 
-    # Theme pulse sidebar — top clusters by total papers
-    pulse_clusters = sorted(all_clusters, key=lambda c: -(c.n_today + c.n_recent))[:4]
+    # Top themes sidebar — top clusters by total papers
+    pulse_clusters = sorted(unique_all_clusters, key=lambda c: -(c.n_today + c.n_recent))[:4]
     pulse_max = max((c.n_today + c.n_recent for c in pulse_clusters), default=1)
     pulse_items_html = ""
     for i, c in enumerate(pulse_clusters, 1):
@@ -1749,59 +1814,30 @@ def render_daily_html(
         pulse_items_html += (
             f'<div class="pulse-item" onclick="location.href=\'#cat-{esc(anchor_of(c.category))}\'">'
             f'<div class="pulse-rank">{i:02d}</div>'
-            f'<div class="pulse-name">{esc(c.theme_name or c.category)}'
+            f'<div class="pulse-name">{esc(_canonical_name(c))}'
             f'<small>{esc(c.category)}</small></div>'
             f'<div><div class="pulse-bar" style="--w:{pct}%"></div>'
             f'<div class="pulse-count">{cnt}편</div></div>'
             f'</div>'
         )
 
-    # Top theme cards (ranked by today's papers plus recent baseline papers)
-    theme_candidates = [c for c in all_clusters if not c.theme_name_fallback]
-    top4 = sorted(theme_candidates, key=lambda c: -(c.n_today + c.n_recent))[:4]
-    labels = ["Largest", "High Volume", "Recurring", "Context"]
-    theme_cards_html = ""
-    for i, c in enumerate(top4):
-        total_w = c.n_today + c.n_recent
-        pct = min(100, int(total_w / max(1, pulse_max) * 100))
-        pct_of_all = int(total_w / max(1, total) * 100)
-        theme_cards_html += (
-            '<div class="t-card">'
-            f'<div class="t-label">Theme {i+1:02d} · {labels[i] if i < len(labels) else "Active"}</div>'
-            f'<div class="t-title">{esc(c.theme_name or c.category)}</div>'
-            f'<div class="t-desc">{esc(c.theme_summary or "")}</div>'
-            f'<div class="t-bar" style="--w:{pct}%"></div>'
-            f'<div class="t-count"><span>{total_w}편</span><b>{pct_of_all}%</b></div>'
-            f'</div>'
-        )
-
-    # Rising/new status note for cross-theme header
-    highlights_new = [c for c in all_clusters if c.status == "new" and c.n_today >= 2]
-    highlights_rising = [c for c in all_clusters if c.status == "rising"]
-    if highlights_new:
-        crosstheme_meta = f"{len(highlights_new)}개 신규 주제"
-    elif highlights_rising:
-        crosstheme_meta = f"{len(highlights_rising)}개 급부상"
-    else:
-        crosstheme_meta = "급부상 없음 · 기준 데이터 축적 중"
-    crosstheme_block_html = (
-        '<div class="sec-head">'
-        '<h2 class="sec-h">Top Themes</h2>'
-        f'<div class="sec-meta">{esc(crosstheme_meta)}</div>'
-        '</div>'
-        f'<div class="themes">{theme_cards_html}</div>'
-    ) if theme_cards_html else ""
-
-    # Living-cluster evolution highlights — Born / Extended / Renamed / Revived
-    born_clusters = [c for c in all_clusters if c.lineage == "born" and c.n_added_today > 0]
-    extended_clusters = [c for c in all_clusters if c.lineage == "extended" and c.n_added_today > 0]
-    renamed_clusters = [c for c in all_clusters if c.renamed]
-    revived_clusters = [c for c in all_clusters if c.revived]
+    # Living-cluster evolution highlights — one row per living cluster.
+    born_clusters = [c for c in unique_all_clusters if c.lineage == "born" and c.n_added_today > 0]
+    extended_clusters = [c for c in unique_all_clusters if c.lineage == "extended" and c.n_added_today > 0]
+    extended_uids = {c.living_uid for c in extended_clusters if c.living_uid}
+    renamed_clusters = [
+        c for c in unique_all_clusters
+        if c.renamed and (not c.living_uid or c.living_uid not in extended_uids)
+    ]
+    revived_clusters = [
+        c for c in unique_all_clusters
+        if c.revived and (not c.living_uid or c.living_uid not in extended_uids)
+    ]
 
     def _uid_link(c: Cluster) -> str:
         if c.living_uid:
-            return f'<a class="evo-name" href="cluster-{esc(c.living_uid)}.html">{esc(c.theme_name or "(무제)")}</a>'
-        return f'<a class="evo-name" href="#cat-{esc(anchor_of(c.category))}">{esc(c.theme_name or "(무제)")}</a>'
+            return f'<a class="evo-name" href="cluster-{esc(c.living_uid)}.html">{esc(_canonical_name(c))}</a>'
+        return f'<a class="evo-name" href="#cat-{esc(anchor_of(c.category))}">{esc(_canonical_name(c))}</a>'
 
     evo_items_html = ""
     for c in born_clusters:
@@ -1812,16 +1848,20 @@ def render_daily_html(
             f'<span class="evo-meta">새 주제 · {c.n_today}편</span>'
             f'</div>'
         )
-    for c in sorted(extended_clusters, key=lambda c: -c.n_today):
+    for c in sorted(extended_clusters, key=lambda c: -c.n_added_today):
         cluster_total = c.prior_member_count + c.n_added_today
-        growth_bit = (f' · 🔥 최근 7일 {int(round(c.growth_rate_7d * 100))}%'
-                      if c.growth_rate_7d >= 0.3 else '')
+        meta_bits = [f'+{c.n_added_today} → 총 {cluster_total}편']
+        if c.renamed:
+            meta_bits.append(f'renamed{(" · " + esc(c.rename_reason)) if c.rename_reason else ""}')
+        if c.revived:
+            meta_bits.append('revived')
+        if c.growth_rate_7d >= 0.3:
+            meta_bits.append(f'🔥 7일 {int(round(c.growth_rate_7d * 100))}%')
         evo_items_html += (
             f'<div class="evo-item evo-ext">'
             f'<span class="evo-kind">Extended</span>'
             f'{_uid_link(c)}'
-            f'<span class="evo-meta">+{c.n_added_today} → 총 {cluster_total}편'
-            f'{growth_bit}</span>'
+            f'<span class="evo-meta">{" · ".join(meta_bits)}</span>'
             f'</div>'
         )
     for c in renamed_clusters:
@@ -1829,8 +1869,8 @@ def render_daily_html(
             f'<div class="evo-item evo-ren">'
             f'<span class="evo-kind">Renamed</span>'
             f'{_uid_link(c)}'
-            f'<span class="evo-meta">{esc(c.name_before)} → {esc(c.theme_name)}'
-            f' · {esc(c.rename_reason)}</span>'
+            f'<span class="evo-meta">renamed'
+            f'{(" · " + esc(c.rename_reason)) if c.rename_reason else ""}</span>'
             f'</div>'
         )
     for c in revived_clusters:
@@ -1844,9 +1884,13 @@ def render_daily_html(
 
     # Rising — top clusters where ≥30% of mass arrived in the last 7 days,
     # excluding ones already surfaced above as Born/Extended.
-    surfaced_uids = {c.living_uid for c in born_clusters + extended_clusters if c.living_uid}
+    surfaced_uids = {
+        c.living_uid
+        for c in born_clusters + extended_clusters + renamed_clusters + revived_clusters
+        if c.living_uid
+    }
     rising_clusters = sorted(
-        [c for c in all_clusters
+        [c for c in unique_all_clusters
          if c.growth_rate_7d >= 0.3 and c.living_uid
          and c.living_uid not in surfaced_uids],
         key=lambda c: -c.growth_rate_7d,
@@ -1889,8 +1933,10 @@ def render_daily_html(
     evo_meta_bits = []
     if born_clusters: evo_meta_bits.append(f"Born {len(born_clusters)}")
     if extended_clusters: evo_meta_bits.append(f"Extended {len(extended_clusters)}")
-    if renamed_clusters: evo_meta_bits.append(f"Renamed {len(renamed_clusters)}")
-    if revived_clusters: evo_meta_bits.append(f"Revived {len(revived_clusters)}")
+    renamed_count = sum(1 for c in unique_all_clusters if c.renamed)
+    revived_count = sum(1 for c in unique_all_clusters if c.revived)
+    if renamed_count: evo_meta_bits.append(f"Renamed {renamed_count}")
+    if revived_count: evo_meta_bits.append(f"Revived {revived_count}")
     if rising_clusters: evo_meta_bits.append(f"Rising {len(rising_clusters)}")
     if split_events_today: evo_meta_bits.append(f"Split {len(split_events_today)}")
     evo_block_html = (
@@ -1944,10 +1990,14 @@ def render_daily_html(
     # Category sections
     sections_html = ""
     for cat_i, cat in enumerate(cats_sorted, 1):
-        cl_list = sorted(clusters_by_cat[cat], key=lambda c: (-c.rising_score, -c.n_today))
-        n = sum(cl.n_today for cl in cl_list)
+        cl_list_raw = sorted(clusters_by_cat[cat], key=lambda c: (-c.rising_score, -c.n_today))
+        n = sum(cl.n_today for cl in cl_list_raw)
         if n == 0:
             continue
+        cl_list = sorted(
+            [_merged_cluster(group) for group in _group_clusters(cl_list_raw)],
+            key=lambda c: (-c.rising_score, -c.n_today),
+        )
         anchor = anchor_of(cat)
 
         # subtitle from top cluster keywords
@@ -1985,7 +2035,7 @@ def render_daily_html(
             if c.lineage == "born":
                 badge_bits.append('<span class="cluster-badge new">NEW</span>')
             elif c.lineage == "extended" and c.n_added_today > 0:
-                badge_bits.append(f'<span class="cluster-badge ext">+{c.n_added_today} today</span>')
+                badge_bits.append(f'<span class="cluster-badge ext">+{c.n_added_today} this week</span>')
             if c.renamed:
                 badge_bits.append('<span class="cluster-badge ren">RENAMED</span>')
             if c.revived:
@@ -2001,33 +2051,32 @@ def render_daily_html(
             # has only a single paper in total — there's nothing to abstract
             # across, so the "summary" would just duplicate that paper.
             total_size = c.n_today + c.n_recent
-            show_summary = bool(c.theme_summary) and total_size >= 2
+            display_name = _canonical_name(c)
+            display_summary = _canonical_summary(c)
+            total_size = max(total_size, c.prior_member_count + c.n_added_today)
+            show_summary = bool(display_summary) and total_size >= 2
             cluster_uid_link = (f'cluster-{esc(c.living_uid)}.html'
                                 if c.living_uid else f'#cat-{esc(anchor)}')
             added_bit = (f' <span class="added">+{c.n_added_today} this week</span>'
                          if c.n_added_today > 0 else "")
             count_html = (
-                f'<a class="cluster-count" href="{cluster_uid_link}">'
+                f'<span class="cluster-count">'
                 f'📄 <b>{total_size}</b> papers{added_bit}'
-                f'</a>'
+                f'</span>'
             )
-            foot_html = (
-                f'<div class="cluster-foot">'
-                f'<a href="{cluster_uid_link}">View all members →</a>'
-                f'</div>'
-            ) if c.living_uid else ""
+            head_tag = "a" if c.living_uid else "div"
+            head_href = f' href="{cluster_uid_link}"' if c.living_uid else ""
             cluster_cards.append(
                 '<div class="cluster-group">'
-                '<div class="cluster-head">'
+                f'<{head_tag} class="cluster-head"{head_href}>'
                 + badge +
                 f'<span class="cluster-label">cluster</span>'
-                f'<span class="cluster-name">{esc(c.theme_name or "")}</span>'
-                + (f'<p class="cluster-summary">{esc(c.theme_summary)}</p>' if show_summary else '') +
+                f'<span class="cluster-name">{esc(display_name)}</span>'
+                + (f'<p class="cluster-summary">{esc(display_summary)}</p>' if show_summary else '') +
                 count_html +
                 spark_html +
-                '</div>'
+                f'</{head_tag}>'
                 + (f'<div class="cluster-preview">{cluster_preview}</div>' if cluster_preview else '') +
-                foot_html +
                 '</div>'
             )
 
@@ -2060,7 +2109,7 @@ def render_daily_html(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Daily Brief · {esc(target_date.isoformat())}</title>
+<title>Weekly Brief · {esc(target_date.isoformat())}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -2082,7 +2131,7 @@ def render_daily_html(
 </div>
 <script>
   (function() {{
-    var key = 'daily-brief-cols';
+    var key = 'weekly-brief-cols';
     var root = document.documentElement;
     var buttons = document.querySelectorAll('.col-toggle button');
     function apply(choice) {{
@@ -2106,8 +2155,8 @@ def render_daily_html(
 
   <div class="mast">
     <div class="mast-left">
-      <div class="mast-title">Daily Brief</div>
-      <div class="mast-sub">Neuroscience · 매일의 논문 요약</div>
+      <div class="mast-title">Weekly Brief</div>
+      <div class="mast-sub">Neuroscience · 주간 논문 요약</div>
     </div>
     <div class="mast-right">
       Vol.&nbsp;{target_date.year} · Iss.&nbsp;{iss_str} · <b>{esc(date_str)}</b><br>
@@ -2116,42 +2165,40 @@ def render_daily_html(
   </div>
 
   <div class="strap">
-    <span><span class="dot"></span>Today's Reading List · {total} articles</span>
-    <span>Window: today &nbsp;·&nbsp; Baseline: last {BASELINE_DAYS} days</span>
+    <span><span class="dot"></span>This Week's Reading List · {total} articles</span>
+    <span>Window: this week &nbsp;·&nbsp; Baseline: last {BASELINE_DAYS} days</span>
   </div>
 
   <section class="hero">
     <div class="hero-main">
-      <div class="kicker">Today's Through-line</div>
+      <div class="kicker">This Week's Through-line</div>
       <h1 class="hero-h">{esc(headline)}</h1>
       <p class="hero-lede">{esc(lede)}</p>
       <div class="hero-stats">
-        <div class="stat"><b>{total}</b><span>new articles</span></div>
+        <div class="stat"><b>{total}</b><span>new articles this week</span></div>
         <div class="stat"><b>{len(cats_sorted)}</b><span>categories</span></div>
         <div class="stat"><b>{len(all_clusters)}</b><span>themes</span></div>
         <div class="stat"><b>{n_recent_year}</b><span>papers {target_date.year - 1}–{target_date.year}</span></div>
       </div>
     </div>
     <div class="hero-side">
-      <div class="side-h">Theme Pulse · 주제 밀도</div>
+      <div class="side-h">Top Themes · 주제 밀도</div>
       <div class="pulse-list">{pulse_items_html}</div>
     </div>
   </section>
 
-  {crosstheme_block_html}
-
   {evo_block_html}
 
   <div class="sec-head">
-    <h2 class="sec-h">Today's Reading</h2>
+    <h2 class="sec-h">This Week's Reading</h2>
     <div class="sec-meta">{len(cats_sorted)} categories · {total} articles</div>
   </div>
 
   {sections_html}
 
   <footer>
-    <span>Daily Brief · Neuroscience Edition</span>
-    <span>Window: today · Baseline: last {BASELINE_DAYS} days</span>
+    <span>Weekly Brief · Neuroscience Edition</span>
+    <span>Window: this week · Baseline: last {BASELINE_DAYS} days</span>
     <span>{total} articles · {len(cats_sorted)} categories · {len(all_clusters)} themes</span>
     <a href="index.html" style="color:inherit">↑ index</a>
   </footer>
@@ -3002,7 +3049,7 @@ def render_rollup_index() -> Path:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Daily Brief · Archive</title>
+<title>Weekly Brief · Archive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -3013,24 +3060,24 @@ def render_rollup_index() -> Path:
 
   <div class="mast">
     <div class="mast-left">
-      <div class="mast-title">Daily Brief</div>
-      <div class="mast-sub">Neuroscience · 매일의 논문 요약</div>
+      <div class="mast-title">Weekly Brief</div>
+      <div class="mast-sub">Neuroscience · 주간 논문 요약</div>
     </div>
     <div class="mast-right">
       Archive · All issues<br>
-      <b>Updated daily</b>
+      <b>Updated weekly</b>
     </div>
   </div>
 
   <div class="strap">
-    <span><span class="dot"></span>Live feed · Rollup of daily digests</span>
+    <span><span class="dot"></span>Live feed · Rollup of weekly digests</span>
     <span>{total_issues} issue{"s" if total_issues != 1 else ""} published</span>
   </div>
 
   <div class="title-row">
     <h1 class="page-h">The <em>Archive</em></h1>
     <div class="page-sub">
-      Daily digests of new arrivals in<br>
+      Weekly digests of new arrivals in<br>
       computational, clinical &amp; molecular neuroscience.<br>
       <b>Click any issue to read →</b>
     </div>
@@ -3054,28 +3101,28 @@ def render_rollup_index() -> Path:
     <div class="about-cell">
       <div class="h">What is this</div>
       <div class="t">
-        <b>Daily Brief</b>는 매일 새로 수집된 신경과학 논문들의 요약과 공통 주제를
-        정리한 아카이브입니다. 각 호는 어제까지의 {BASELINE_DAYS}일을 baseline으로 주제 흐름을 감지합니다.
+        <b>Weekly Brief</b>는 주간 단위로 수집된 신경과학 논문들의 요약과 공통 주제를
+        정리한 아카이브입니다. 각 호는 직전 {BASELINE_DAYS}일을 baseline으로 주제 흐름을 감지합니다.
       </div>
     </div>
     <div class="about-cell">
       <div class="h">Cadence</div>
       <div class="t">
-        매일 업데이트되는 PDF 기반 자동 브리프입니다. 카테고리, 주제, 요약은 로컬 아카이브를 기준으로 구성됩니다.
+        주간 업데이트되는 PDF 기반 자동 브리프입니다. 카테고리, 주제, 요약은 로컬 아카이브를 기준으로 구성됩니다.
       </div>
     </div>
     <div class="about-cell">
       <div class="h">How to read</div>
       <div class="t">
-        각 호는 <b>Through-line</b>으로 시작해 <b>Theme Pulse</b>와 카테고리별 논문 카드로 이어집니다.
+        각 호는 <b>Through-line</b>으로 시작해 <b>Top Themes</b>와 카테고리별 논문 카드로 이어집니다.
         제목을 클릭하면 PDF 원문으로 이동합니다.
       </div>
     </div>
   </div>
 
   <footer>
-    <span>Daily Brief · Neuroscience Edition</span>
-    <span>daily_news.py · Window: today · Baseline: {BASELINE_DAYS} days</span>
+    <span>Weekly Brief · Neuroscience Edition</span>
+    <span>weekly_news.py · Window: this week · Baseline: {BASELINE_DAYS} days</span>
     <span>Generated {esc(gen_time)}</span>
   </footer>
 
@@ -3121,7 +3168,7 @@ def run(
 ) -> None:
     t0 = time.time()
     log.info("=" * 60)
-    log.info("daily_news run  date=%s  from=%s  to=%s  since_hours=%s  llm=%s  articles_root=%s",
+    log.info("weekly_news run  date=%s  from=%s  to=%s  since_hours=%s  llm=%s  articles_root=%s",
              target_date, from_date, target_date if from_date else None,
              since_hours, use_llm, ARTICLES_ROOT)
 
@@ -3580,7 +3627,7 @@ def load_daily_summaries() -> dict[str, dict]:
 
 def main() -> None:
     ap = argparse.ArgumentParser(
-        prog="daily-news",
+        prog="weekly-news",
         description=__doc__.split("\n\n")[0] if __doc__ else "",
     )
     ap.add_argument("--articles-root", default=None,

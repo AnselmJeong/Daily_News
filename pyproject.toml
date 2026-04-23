@@ -1,7 +1,7 @@
 [project]
-name = "daily-news"
+name = "weekly-news"
 version = "0.1.0"
-description = "Daily HTML digest of new articles with LLM-named themes and a rising-topic detector."
+description = "Weekly HTML digest of new articles with LLM-named themes and a rising-topic detector."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Anselm Jeong", email = "anselmjeong@gmail.com" }]
@@ -15,6 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
+weekly-news = "daily_news.cli:main"
 daily-news = "daily_news.cli:main"
 
 [build-system]

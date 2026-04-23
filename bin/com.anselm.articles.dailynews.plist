@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  macOS launchd job: run daily_news.py every evening at 19:00.
+  macOS launchd job: run weekly_news every week.
 
   Install:
     1. Replace the two ABSOLUTE_PATH_TO_... placeholders below with the
@@ -31,9 +31,11 @@
   <key>WorkingDirectory</key>
   <string>/ABSOLUTE_PATH_TO_ARTICLES/Articles</string>
 
-  <!-- Run every day at 19:00 local time -->
+  <!-- Run weekly at 19:00 local time -->
   <key>StartCalendarInterval</key>
   <dict>
+    <key>Weekday</key>
+    <integer>0</integer>
     <key>Hour</key>
     <integer>19</integer>
     <key>Minute</key>
