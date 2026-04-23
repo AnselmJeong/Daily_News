@@ -241,7 +241,7 @@ def incremental_centroid(old_centroid: list[float], old_n: int, new_emb) -> list
 
 
 # ---------------------------------------------------------------------------
-# Bootstrap — seed registry from themes_history.jsonl
+# Bootstrap — seed registry from cached theme snapshots
 # ---------------------------------------------------------------------------
 
 def bootstrap_from_themes_history(
@@ -262,19 +262,24 @@ def bootstrap_from_themes_history(
     existing = load_all_clusters(root)
     if any(existing.values()):
         return existing
-    if not themes_history_path.exists():
-        return {}
-
     from collections import defaultdict
     # latest snapshot wins per (category, cluster_id, date-based lineage)
     # We can't reconstruct true lineage from daily snapshots, so we just take
     # the latest snapshot and treat each as a seed.
     by_key: dict[tuple, dict] = {}
-    for line in themes_history_path.read_text(encoding="utf-8").splitlines():
-        try:
-            rec = json.loads(line)
-        except Exception:
-            continue
+    records: list[dict] = []
+    try:
+        from . import cache_store
+        records = cache_store.load_theme_snapshots(
+            themes_history_path.parent,
+            themes_history_path,
+        )
+    except Exception:
+        records = []
+    if not records:
+        return {}
+
+    for rec in records:
         key = (rec.get("category", ""), rec.get("cluster_id"), rec.get("date", ""))
         # use the date as tiebreaker; later date wins
         prev = by_key.get((rec.get("category", ""), rec.get("cluster_id")))
@@ -317,7 +322,7 @@ def bootstrap_from_themes_history(
             events=[{
                 "at": rec["date"],
                 "type": "bootstrapped",
-                "from": "themes_history.jsonl",
+                "from": "theme_snapshots",
                 "seed_files": rec["members_today"],
             }],
         )

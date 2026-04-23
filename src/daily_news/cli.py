@@ -291,23 +291,13 @@ _BAD_CHARS_RE = re.compile(r"[\u0000-\u0008\u000b\u000c\u000e-\u001f]")
 
 
 def load_abstracts_cache() -> dict[str, dict]:
-    cache: dict[str, dict] = {}
-    if ABSTRACTS_PATH.exists():
-        for line in ABSTRACTS_PATH.read_text().splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                obj = json.loads(line)
-                cache[obj["fname"]] = obj
-            except Exception:
-                continue
-    return cache
+    from . import cache_store
+    return cache_store.load_abstracts(CACHE_DIR, ABSTRACTS_PATH)
 
 
 def append_abstract_cache(obj: dict) -> None:
-    with ABSTRACTS_PATH.open("a") as f:
-        f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    from . import cache_store
+    cache_store.append_abstract(CACHE_DIR, obj)
 
 
 def persist_tldrs(entries: list["Entry"]) -> None:
@@ -965,6 +955,13 @@ def rename_drifted_clusters(
 
 
 def _append_jsonl(path: Path, obj: dict) -> None:
+    from . import cache_store
+    if path == DECISIONS_LOG_PATH:
+        cache_store.append_decision(CACHE_DIR, obj)
+        return
+    if path == RUN_LOG_PATH:
+        cache_store.append_run_log(CACHE_DIR, obj)
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as f:
         f.write(json.dumps(obj, ensure_ascii=False) + "\n")
@@ -1266,34 +1263,34 @@ def score_rising(clusters: list[Cluster]) -> None:
 
 
 def save_theme_snapshot(target_date: date, clusters: list[Cluster]) -> None:
-    with THEMES_HISTORY_PATH.open("a") as f:
-        for c in clusters:
-            if c.centroid is None:
-                continue
-            rec = {
-                "date": target_date.isoformat(),
-                "category": c.category,
-                "cluster_id": c.cluster_id,
-                "living_uid": c.living_uid,
-                "lineage": c.lineage,
-                "theme_name": c.theme_name,
-                "theme_name_fallback": c.theme_name_fallback,
-                "n_today": c.n_today,
-                "n_added_today": c.n_added_today,
-                "n_recent": c.n_recent,
-                "prior_member_count": c.prior_member_count,
-                "rising_score": c.rising_score,
-                "status": c.status,
-                "renamed": c.renamed,
-                "keywords_are_fallback": c.keywords_are_fallback,
-                "name_before": c.name_before,
-                "rename_reason": c.rename_reason,
-                "revived": c.revived,
-                "growth_rate_7d": round(float(c.growth_rate_7d), 4),
-                "centroid": [round(float(x), 5) for x in c.centroid.tolist()],
-                "members_today": [e.fname for e in c.members_today],
-            }
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    from . import cache_store
+    for c in clusters:
+        if c.centroid is None:
+            continue
+        rec = {
+            "date": target_date.isoformat(),
+            "category": c.category,
+            "cluster_id": c.cluster_id,
+            "living_uid": c.living_uid,
+            "lineage": c.lineage,
+            "theme_name": c.theme_name,
+            "theme_name_fallback": c.theme_name_fallback,
+            "n_today": c.n_today,
+            "n_added_today": c.n_added_today,
+            "n_recent": c.n_recent,
+            "prior_member_count": c.prior_member_count,
+            "rising_score": c.rising_score,
+            "status": c.status,
+            "renamed": c.renamed,
+            "keywords_are_fallback": c.keywords_are_fallback,
+            "name_before": c.name_before,
+            "rename_reason": c.rename_reason,
+            "revived": c.revived,
+            "growth_rate_7d": round(float(c.growth_rate_7d), 4),
+            "centroid": [round(float(x), 5) for x in c.centroid.tolist()],
+            "members_today": [e.fname for e in c.members_today],
+        }
+        cache_store.append_theme_snapshot(CACHE_DIR, rec)
 
 
 # ---------------------------------------------------------------------------
@@ -2889,7 +2886,7 @@ def _describe_event(ev: dict) -> str:
     if t == "dormant":
         return f'marked dormant'
     if t == "bootstrapped":
-        return f'seeded from themes_history.jsonl'
+        return f'seeded from theme snapshots'
     return esc(str(ev))
 
 
@@ -3137,20 +3134,12 @@ def render_rollup_index() -> Path:
 
 
 def _peek_day_themes(d: str) -> str:
-    """Read themes_history.jsonl and grab up to 2 headline themes for the date."""
-    if not THEMES_HISTORY_PATH.exists():
-        return ""
+    """Read theme snapshots and grab up to 2 headline themes for the date."""
+    from . import cache_store
     hot: list[tuple[float, str]] = []
-    with THEMES_HISTORY_PATH.open() as f:
-        for line in f:
-            try:
-                obj = json.loads(line)
-            except Exception:
-                continue
-            if obj.get("date") != d:
-                continue
-            if obj.get("status") in ("rising", "new") and obj.get("theme_name"):
-                hot.append((obj.get("rising_score", 0), obj["theme_name"]))
+    for obj in cache_store.load_theme_snapshots_for_date(CACHE_DIR, THEMES_HISTORY_PATH, d):
+        if obj.get("status") in ("rising", "new") and obj.get("theme_name"):
+            hot.append((obj.get("rising_score", 0), obj["theme_name"]))
     hot.sort(reverse=True)
     names = [name for _, name in hot[:2]]
     return " · ".join(names)
@@ -3578,22 +3567,15 @@ def run_rebuild_clusters(force: bool = False, dry_run: bool = False) -> None:
 
 def _log_run(rec: dict) -> None:
     rec["ts"] = datetime.now().isoformat(timespec="seconds")
-    with RUN_LOG_PATH.open("a") as f:
-        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    from . import cache_store
+    cache_store.append_run_log(CACHE_DIR, rec)
 
 
 def save_daily_summary(target_date: date, headline: str, lede: str,
                         n_articles: int, n_categories: int, n_themes: int,
                         n_recent_year: Optional[int] = None) -> None:
-    records: dict[str, dict] = {}
-    if DAILY_SUMMARIES_PATH.exists():
-        for line in DAILY_SUMMARIES_PATH.read_text().splitlines():
-            try:
-                obj = json.loads(line)
-                records[obj["date"]] = obj
-            except Exception:
-                continue
-    records[target_date.isoformat()] = {
+    from . import cache_store
+    rec = {
         "date": target_date.isoformat(),
         "headline": headline,
         "lede": lede,
@@ -3603,22 +3585,12 @@ def save_daily_summary(target_date: date, headline: str, lede: str,
         "n_recent_year": n_recent_year,
         "saved_at": datetime.now().isoformat(timespec="seconds"),
     }
-    with DAILY_SUMMARIES_PATH.open("w") as f:
-        for obj in records.values():
-            f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    cache_store.save_daily_summary(CACHE_DIR, rec)
 
 
 def load_daily_summaries() -> dict[str, dict]:
-    if not DAILY_SUMMARIES_PATH.exists():
-        return {}
-    records: dict[str, dict] = {}
-    for line in DAILY_SUMMARIES_PATH.read_text().splitlines():
-        try:
-            obj = json.loads(line)
-            records[obj["date"]] = obj
-        except Exception:
-            continue
-    return records
+    from . import cache_store
+    return cache_store.load_daily_summaries(CACHE_DIR, DAILY_SUMMARIES_PATH)
 
 
 # ---------------------------------------------------------------------------

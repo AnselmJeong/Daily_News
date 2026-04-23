@@ -3,9 +3,10 @@ Orphan pool — per-category store of unclustered papers that are re-evaluated
 at the start of each weekly run, so a paper that looked lonely one week may
 still join a cluster weeks later.
 
-Storage layout (under `<articles>/_news/.cache/orphan_pool/`):
+Storage layout:
 
-    <category slug>.jsonl   # one record per orphan, newline-delimited JSON
+    <articles>/_news/.cache/cache.db  # primary SQLite store
+    <category slug>.jsonl             # legacy import source only
 
 Each record:
 
@@ -21,10 +22,7 @@ embedding entry it is treated as unusable and dropped silently.
 """
 from __future__ import annotations
 
-import json
-import os
 import re
-import tempfile
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
@@ -73,62 +71,25 @@ def pool_path(root: Path, category: str) -> Path:
 
 
 def load_pool(root: Path, category: str) -> list[OrphanRecord]:
-    path = pool_path(root, category)
-    if not path.exists():
-        return []
-    out: list[OrphanRecord] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            out.append(OrphanRecord.from_json(json.loads(line)))
-        except Exception:
-            continue
-    return out
+    from . import cache_store
+    rows = cache_store.load_orphans(root.parent, root, category)
+    return [OrphanRecord.from_json(row) for row in rows]
 
 
 def load_all_pools(root: Path) -> dict[str, list[OrphanRecord]]:
     """Return {category -> [OrphanRecord, ...]}. Category key is the human form
     stored on the record (not the slug)."""
-    result: dict[str, list[OrphanRecord]] = {}
-    if not root.exists():
-        return result
-    for p in sorted(root.glob("*.jsonl")):
-        for line in p.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rec = OrphanRecord.from_json(json.loads(line))
-            except Exception:
-                continue
-            result.setdefault(rec.category, []).append(rec)
-    return result
+    from . import cache_store
+    rows_by_cat = cache_store.load_all_orphans(root.parent, root)
+    return {
+        cat: [OrphanRecord.from_json(row) for row in rows]
+        for cat, rows in rows_by_cat.items()
+    }
 
 
 def save_pool(root: Path, category: str, records: list[OrphanRecord]) -> None:
-    path = pool_path(root, category)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if not records:
-        # empty pool → remove file to keep the directory tidy
-        try:
-            path.unlink()
-        except FileNotFoundError:
-            pass
-        return
-    fd, tmp = tempfile.mkstemp(prefix=".tmp-", dir=str(path.parent))
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            for r in records:
-                f.write(json.dumps(r.to_json(), ensure_ascii=False) + "\n")
-        os.replace(tmp, path)
-    except Exception:
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
-        raise
+    from . import cache_store
+    cache_store.replace_orphans(root.parent, category, [r.to_json() for r in records])
 
 
 def prune(
